@@ -28,13 +28,26 @@ async function createUser(name, password) {
   return true;
 }
 
+async function setUserVersion(id, version) {
+  try { await (await db).run("UPDATE users SET version=? WHERE id=?", [version, id]); }
+  catch (err) { return false; }
+  return true;
+}
+
 async function getUserByName(name) {
   try { return await (await db).get("SELECT * FROM users WHERE name=?;", [name]); }
   catch (err) { return null; }
 }
 
+async function getUserById(id) {
+  try { return await (await db).get("SELECT * FROM users WHERE id=?;", [id]); }
+  catch (err) { return null; }
+}
+
 module.exports = {
   initUserTable,
+  setUserVersion,
   getUserByName,
+  getUserById,
   createUser
 };
