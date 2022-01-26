@@ -1,8 +1,9 @@
-const express = require("express");
 const { v4 } = require("uuid");
+const express = require("express");
 const { checkToken } = require("../middleware/auth");
 const { getUserByName, createUser, setUserVersion } = require("../utils/database");
 const { sendAccessToken, sendRefreshToken } = require("../utils/tokens");
+const { genSaltSync, hashSync, compareSync } = require("bcrypt");
 
 const authRoutes = express.Router();
 
@@ -13,7 +14,9 @@ authRoutes.post("/register", async (req, res) => {
   const foundUser = await getUserByName(name);
   if (foundUser) return res.sendStatus(403);
 
-  const isSuccessful = await createUser(name, password);
+  const salt = genSaltSync(12);
+  const hashedPassword = hashSync(password, salt);
+  const isSuccessful = await createUser(name, hashedPassword);
   if (!isSuccessful) return res.sendStatus(403);
 
   return res.sendStatus(200);
@@ -26,7 +29,7 @@ authRoutes.post("/login", async (req, res) => {
   const foundUser = await getUserByName(name);
   if (!foundUser) return res.sendStatus(403);
 
-  const isPasswordCorrect = foundUser.password === password;
+  const isPasswordCorrect = compareSync(password, foundUser.password);
   if (!isPasswordCorrect) return res.sendStatus(403);
 
   const newVersion = v4();
