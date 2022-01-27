@@ -14,8 +14,8 @@ const handle = app.getRequestHandler();
 const url = config.default.url;
 const port = config.default.port;
 
-app.prepare().then(async () => {
-  await initUserTable();
+app.prepare().then(() => {
+  initUserTable();
 
   const server = express();
   server.use(express.json());
@@ -24,8 +24,5 @@ app.prepare().then(async () => {
   server.use("/", authRoutes);
   server.all("*", (req, res) => handle(req, res));
 
-  server.listen(port, () => {
-    console.clear();
-    console.log(`Server started on ${url}:${port}`);
-  });
+  server.listen(port, () => console.log(`Server started on ${url}:${port}`));
 });

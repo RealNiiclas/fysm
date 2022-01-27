@@ -7,33 +7,33 @@ const { genSaltSync, hashSync, compareSync } = require("bcrypt");
 
 const authRoutes = express.Router();
 
-authRoutes.post("/register", async (req, res) => {
+authRoutes.post("/register", (req, res) => {
   const { name, password } = req.body;
   if (!name || !password) return res.sendStatus(403);
 
-  const foundUser = await getUserByName(name);
+  const foundUser = getUserByName(name);
   if (foundUser) return res.sendStatus(403);
 
   const salt = genSaltSync(12);
   const hashedPassword = hashSync(password, salt);
-  const isSuccessful = await createUser(name, hashedPassword);
+  const isSuccessful = createUser(name, hashedPassword);
   if (!isSuccessful) return res.sendStatus(403);
 
   return res.sendStatus(200);
 });
 
-authRoutes.post("/login", async (req, res) => {
+authRoutes.post("/login", (req, res) => {
   const { name, password } = req.body;
   if (!name || !password) return res.sendStatus(403);
 
-  const foundUser = await getUserByName(name);
+  const foundUser = getUserByName(name);
   if (!foundUser) return res.sendStatus(403);
 
   const isPasswordCorrect = compareSync(password, foundUser.password);
   if (!isPasswordCorrect) return res.sendStatus(403);
 
   const newVersion = v4();
-  await setUserVersion(foundUser.id, newVersion);
+  setUserVersion(foundUser.id, newVersion);
   foundUser.version = newVersion;
 
   sendAccessToken(res, foundUser);
@@ -42,16 +42,16 @@ authRoutes.post("/login", async (req, res) => {
   return res.sendStatus(200);
 });
 
-authRoutes.post("/logout", checkToken("act"), async (req, res) => {
-  await setUserVersion(res.locals.user.id, v4());
+authRoutes.post("/logout", checkToken("act"), (req, res) => {
+  setUserVersion(res.locals.user.id, v4());
   return res.sendStatus(200);
 });
 
-authRoutes.post("/refresh", checkToken("rft"), async (req, res) => {
+authRoutes.post("/refresh", checkToken("rft"), (req, res) => {
   const user = res.locals.user;
   const newVersion = v4();
 
-  await setUserVersion(user.id, newVersion);
+  setUserVersion(user.id, newVersion);
   user.version = newVersion;
 
   sendAccessToken(res, user);
