@@ -1,6 +1,7 @@
 const next = require("next");
 const express = require("express");
 const session = require("express-session");
+const store = require("memorystore")(session);
 const { initUserTable } = require("./utils/database");
 const { authRoutes } = require("./routes/auth");
 const config = require("../config.json");
@@ -17,6 +18,7 @@ app.prepare().then(() => {
   const server = express();
   server.use(express.json());
   server.use(session({ 
+    store: new store({ checkPeriod: 1000 * 60 * 60 }),
     name: config.sessionCookieName,
     secret: config.sessionSecret,
     saveUninitialized: false,
