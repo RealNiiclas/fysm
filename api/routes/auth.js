@@ -1,9 +1,6 @@
-const { v4 } = require("uuid");
 const express = require("express");
-const { checkToken } = require("../middleware/auth");
-const { getUserByName, createUser, setUserVersion } = require("../utils/database");
-const { sendAccessToken, sendRefreshToken } = require("../utils/tokens");
 const { genSaltSync, hashSync, compareSync } = require("bcrypt");
+const { getUserByName, createUser } = require("../utils/database");
 
 const authRoutes = express.Router();
 
@@ -23,6 +20,8 @@ authRoutes.post("/register", (req, res) => {
 });
 
 authRoutes.post("/login", (req, res) => {
+  if(req.session.name) return res.sendStatus(403);
+
   const { name, password } = req.body;
   if (!name || !password) return res.sendStatus(403);
 
@@ -32,31 +31,14 @@ authRoutes.post("/login", (req, res) => {
   const isPasswordCorrect = compareSync(password, foundUser.password);
   if (!isPasswordCorrect) return res.sendStatus(403);
 
-  const newVersion = v4();
-  setUserVersion(foundUser.id, newVersion);
-  foundUser.version = newVersion;
-
-  sendAccessToken(res, foundUser);
-  sendRefreshToken(res, foundUser);
-
+  req.session.name = name;
   return res.sendStatus(200);
 });
 
-authRoutes.post("/logout", checkToken("act"), (req, res) => {
-  setUserVersion(res.locals.user.id, v4());
-  return res.sendStatus(200);
-});
-
-authRoutes.post("/refresh", checkToken("rft"), (req, res) => {
-  const user = res.locals.user;
-  const newVersion = v4();
-
-  setUserVersion(user.id, newVersion);
-  user.version = newVersion;
-
-  sendAccessToken(res, user);
-  sendRefreshToken(res, user);
-
+authRoutes.post("/logout", (req, res) => {
+  if(!req.session.name) return res.sendStatus(403);
+  
+  req.session.destroy();
   return res.sendStatus(200);
 });
 

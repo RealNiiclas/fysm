@@ -1,6 +1,6 @@
 const next = require("next");
 const express = require("express");
-const cookieParser = require("cookie-parser");
+const session = require("express-session");
 const { initUserTable } = require("./utils/database");
 const { authRoutes } = require("./routes/auth");
 const config = require("../config.json");
@@ -11,18 +11,26 @@ const isDev = devArg ? devArg.split("=").pop() === "true" : false;
 const app = next({ dev: isDev });
 const handle = app.getRequestHandler();
 
-const url = config.default.url;
-const port = config.default.port;
-
 app.prepare().then(() => {
   initUserTable();
 
   const server = express();
   server.use(express.json());
-  server.use(cookieParser());
+  server.use(session({ 
+    name: config.session.cookieName,
+    secret: config.session.secret,
+    saveUninitialized: false,
+    resave: false,
+    cookie: {
+      httpOnly: true,
+      sameSite: "strict",
+      maxAge: 1000 * 60 * 60 * 24
+    }
+  }));
 
   server.use("/", authRoutes);
   server.all("*", (req, res) => handle(req, res));
 
-  server.listen(port, () => console.log(`Server started on ${url}:${port}`));
+  server.listen(config.default.port, () => 
+    console.log(`Server started on ${config.default.url}:${config.default.port}`));
 });
