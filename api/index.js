@@ -17,8 +17,8 @@ app.prepare().then(() => {
   const server = express();
   server.use(express.json());
   server.use(session({ 
-    name: config.session.cookieName,
-    secret: config.session.secret,
+    name: config.sessionCookieName,
+    secret: config.sessionSecret,
     saveUninitialized: false,
     resave: false,
     cookie: {
@@ -31,6 +31,6 @@ app.prepare().then(() => {
   server.use("/", authRoutes);
   server.all("*", (req, res) => handle(req, res));
 
-  server.listen(config.default.port, () => 
-    console.log(`Server started on ${config.default.url}:${config.default.port}`));
+  server.listen(config.serverPort, () => 
+    console.log(`Server started on ${config.serverAddress}:${config.serverPort}`));
 });

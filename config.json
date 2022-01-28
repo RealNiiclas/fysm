@@ -1,13 +1,7 @@
 {
-  "default": {
-    "url": "http://localhost",
-    "port": "3000"
-  },
-  "session": {
-    "cookieName": "sid",
-    "secret": "Cfg4MBM7Uv6!p!QUHACpahP5de%m*$Zs"
-  },
-  "database": {
-    "outputPath": "/output/database.db"
-  }
+  "serverPort": 3000,
+  "serverAddress": "http://localhost",
+  "sessionCookieName": "sid",
+  "sessionSecret": "Cfg4MBM7Uv6!p!QUHACpahP5de%m*$Zs",
+  "databaseOutputPath": "/output/database.db"
 }
