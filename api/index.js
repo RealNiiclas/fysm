@@ -14,8 +14,9 @@ const isDev = devArg ? devArg.split("=").pop() === "true" : false;
 const nextApp = next({ dev: isDev });
 const handle = nextApp.getRequestHandler();
 
+const sessionStore = new store({ checkPeriod: 1000 * 60 * 60 });
 const sessionMiddleware = session({ 
-  store: new store({ checkPeriod: 1000 * 60 * 60 }),
+  store: sessionStore,
   name: config.sessionCookieName,
   secret: config.sessionSecret,
   saveUninitialized: false,
@@ -43,13 +44,38 @@ nextApp.prepare().then(() => {
   
   const server = createServer(expressApp);
   const socketApp = io(server);
-  socketApp.use((socket, next) => sessionMiddleware(socket.request, {}, next));
+  socketApp.use((socket, next) => 
+    sessionMiddleware(socket.request, {}, next));
 
   socketApp.on("connection", (socket) => {
-    console.log(`Socket (${socket.request.session.id}) connected!`);
-    socket.on("disconnect", () => console.log(`Socket (${socket.request.session.id}) disconnected!`));
+    socket.conn.on("heartbeat", () => {
+      sessionStore.get(socket.request.session.id, (err, data) => {
+        if (data) return;
+        socket.emit("unauthed");
+        socket.disconnect();
+      });
+    });
+    socket.on("message", (message) => {
+      sessionStore.get(socket.request.session.id, (err, data) => {
+        if (data) {
+          socketApp.sockets.sockets.forEach(sockett => {
+            sessionStore.get(sockett.request.session.id, (err, toData) => {
+              if (toData) sockett.emit("message", { message, from: data.name });
+              else {
+                sockett.emit("unauthed");
+                sockett.disconnect();
+              }
+            });
+          });
+        }
+        else {
+          socket.emit("unauthed");
+          socket.disconnect();
+        }
+      });
+    });
     if (!socket.request.session.name) {
-      console.log(`Socket (${socket.request.session.id}) not authenticated!`);
+      socket.emit("unauthed");
       socket.disconnect();
     }
   });
