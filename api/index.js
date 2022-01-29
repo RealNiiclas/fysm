@@ -81,5 +81,5 @@ nextApp.prepare().then(() => {
   });
 
   server.listen(config.serverPort, () => 
-    console.log(`Server started on ${config.serverAddress}:${config.serverPort}`));
+    console.log(`Server started on ${config.serverAddress}${config.serverIncludePort ? ":" + config.serverPort : ""}`));
 });

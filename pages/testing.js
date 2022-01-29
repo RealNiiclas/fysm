@@ -14,7 +14,7 @@ export default function Home() {
   const [messages, setMessages] = useState("");
 
   useEffect(() => {
-    axios.post(`${config.serverAddress}:${config.serverPort}/user`)
+    axios.post(`${config.serverAddress}${config.serverIncludePort ? ":" + config.serverPort : ""}/user`)
       .then((res) => setStatus(`Angemeldet als ${res.data}!`))
       .catch(() => setStatus("Nicht angemeldet!"));
   }, []);
@@ -25,17 +25,17 @@ export default function Home() {
 
     switch (type) {
       case "login":
-        axios.post(`${config.serverAddress}:${config.serverPort}/login`, { name, password })
+        axios.post(`${config.serverAddress}${config.serverIncludePort ? ":" + config.serverPort : ""}/login`, { name, password })
           .then(() => setStatus("Anmeldung erfolgreich!"))
           .catch(() => setStatus("Anmeldung fehlgeschlagen!"));
         break;
       case "logout":
-        axios.post(`${config.serverAddress}:${config.serverPort}/logout`)
+        axios.post(`${config.serverAddress}${config.serverIncludePort ? ":" + config.serverPort : ""}/logout`)
           .then(() => setStatus("Abmeldung erfolgreich!"))
           .catch(() => setStatus("Abmeldung fehlgeschlagen!"));
         break;
       default:
-        axios.post(`${config.serverAddress}:${config.serverPort}/register`, { name, password })
+        axios.post(`${config.serverAddress}${config.serverIncludePort ? ":" + config.serverPort : ""}/register`, { name, password })
           .then(() => setStatus("Registrierung erfolgreich!"))
           .catch(() => setStatus("Registrierung fehlgeschlagen!"));
         break;
@@ -52,7 +52,7 @@ export default function Home() {
     switch (type) {
       case "connect":
         if (socket) return;
-        socket = io(`${config.serverAddress}:${config.serverPort}`, { reconnection: false });
+        socket = io(`${config.serverAddress}${config.serverIncludePort ? ":" + config.serverPort : ""}`, { reconnection: false });
         socket.on("connect", () => setMessages((prev) => `${prev}\nVerbindung aufgebaut!`.trim()));
         socket.on("message", ({ message, from }) => setMessages((prev) => `${prev}\n${from}: ${message}`.trim()));
         socket.on("unauthed", () => setMessages((prev) => `${prev}\nNicht authentifiziert!`.trim()));

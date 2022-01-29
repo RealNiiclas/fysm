@@ -1,5 +1,6 @@
 {
   "serverPort": 3000,
+  "serverIncludePort": false,
   "serverAddress": "http://localhost",
   "sessionCookieName": "sid",
   "sessionSecret": "Cfg4MBM7Uv6!p!QUHACpahP5de%m*$Zs",
