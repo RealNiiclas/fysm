@@ -14,7 +14,15 @@ const isDev = devArg ? devArg.split("=").pop() === "true" : false;
 const nextApp = next({ dev: isDev });
 const handle = nextApp.getRequestHandler();
 
-const sessionStore = new store({ checkPeriod: 1000 * 60 * 60 });
+let socketApp;
+const sessionStore = new store({ checkPeriod: 1000 * 60 * 60, dispose: (key, value) => {
+  socketApp.sockets.sockets.forEach(socket => {
+    if (socket.request.session.id !== key) return;
+    socket.emit("unauthed");
+    socket.disconnect();
+  });
+}});
+
 const sessionMiddleware = session({ 
   store: sessionStore,
   name: config.sessionCookieName,
@@ -43,37 +51,12 @@ nextApp.prepare().then(() => {
   expressApp.all("*", (req, res) => handle(req, res));
   
   const server = createServer(expressApp);
-  const socketApp = io(server);
+  socketApp = io(server);
   socketApp.use((socket, next) => 
     sessionMiddleware(socket.request, {}, next));
 
   socketApp.on("connection", (socket) => {
-    socket.conn.on("heartbeat", () => {
-      sessionStore.get(socket.request.session.id, (err, data) => {
-        if (data) return;
-        socket.emit("unauthed");
-        socket.disconnect();
-      });
-    });
-    socket.on("message", (message) => {
-      sessionStore.get(socket.request.session.id, (err, data) => {
-        if (data) {
-          socketApp.sockets.sockets.forEach(sockett => {
-            sessionStore.get(sockett.request.session.id, (err, toData) => {
-              if (toData) sockett.emit("message", { message, from: data.name });
-              else {
-                sockett.emit("unauthed");
-                sockett.disconnect();
-              }
-            });
-          });
-        }
-        else {
-          socket.emit("unauthed");
-          socket.disconnect();
-        }
-      });
-    });
+    socket.on("message", (message) => socketApp.sockets.emit("message", { message, from: socket.request.session.name }));
     if (!socket.request.session.name) {
       socket.emit("unauthed");
       socket.disconnect();
