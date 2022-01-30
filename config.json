@@ -1,4 +1,5 @@
 {
+  "debug": true,
   "serverPort": 3000,
   "serverIncludePort": true,
   "serverAddress": "http://localhost",

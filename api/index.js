@@ -8,23 +8,19 @@ const { initUserTable } = require("./utils/database");
 const { authRoutes } = require("./routes/auth");
 const config = require("../config.json");
 
-const devArg = process.argv.find(arg => arg.includes("--dev"));
-const isDev = devArg ? devArg.split("=").pop() === "true" : false;
-
-const nextApp = next({ dev: isDev });
+const nextApp = next({ dev: config.debug });
 const handle = nextApp.getRequestHandler();
 
 let socketApp;
-const sessionStore = new store({ checkPeriod: 1000 * 60 * 60, dispose: (key, value) => {
-  socketApp.sockets.sockets.forEach(socket => {
-    if (socket.request.session.id !== key) return;
-    socket.emit("unauthed");
-    socket.disconnect();
-  });
-}});
 
 const sessionMiddleware = session({ 
-  store: sessionStore,
+  store: new store({ checkPeriod: 1000 * 60 * 60, dispose: (key) => {
+    socketApp.sockets.sockets.forEach(socket => {
+      if (socket.request.session.id !== key) return;
+      socket.emit("unauthed");
+      socket.disconnect();
+    });
+  }}),
   name: config.sessionCookieName,
   secret: config.sessionSecret,
   saveUninitialized: false,

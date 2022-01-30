@@ -3,8 +3,7 @@
   "private": true,
   "author": "RealNiiclas, MarckIsNotAmused, SteffenSM",
   "scripts": {
-    "dev": "node api --dev=true",
-    "start": "node api --dev=false",
+    "start": "node api",
     "build": "next build",
     "lint": "next lint"
   },
