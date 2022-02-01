@@ -1,17 +1,18 @@
+const expressApp = require("express")();
+const server = require("http").createServer(expressApp);
+const socketApp = require("socket.io")(server);
+
 const next = require("next");
-const io = require("socket.io");
 const express = require("express");
-const { createServer } = require("http");
 const session = require("express-session");
 const store = require("memorystore")(session);
 const { initUserTable } = require("./utils/database");
 const { authRoutes } = require("./routes/auth");
 const config = require("../config.json");
+const { userRoutes } = require("./routes/user");
 
 const nextApp = next({ dev: config.debug });
 const handle = nextApp.getRequestHandler();
-
-let socketApp;
 
 const sessionMiddleware = session({ 
   store: new store({ checkPeriod: 1000 * 60 * 60, dispose: (key) => {
@@ -35,22 +36,13 @@ const sessionMiddleware = session({
 nextApp.prepare().then(() => {
   initUserTable();
   
-  const expressApp = express();
   expressApp.use(express.json());
   expressApp.use(sessionMiddleware);
-  
   expressApp.use("/", authRoutes);
-  expressApp.post("/user", (req, res) => {
-    if(!req.session.name) return res.sendStatus(403);
-    return res.send(req.session.name);
-  });
+  expressApp.use("/", userRoutes);
   expressApp.all("*", (req, res) => handle(req, res));
-  
-  const server = createServer(expressApp);
-  socketApp = io(server);
-  socketApp.use((socket, next) => 
-    sessionMiddleware(socket.request, {}, next));
 
+  socketApp.use((socket, next) => sessionMiddleware(socket.request, {}, next));
   socketApp.on("connection", (socket) => {
     socket.on("message", (message) => socketApp.sockets.emit("message", { message, from: socket.request.session.name }));
     if (!socket.request.session.name) {
