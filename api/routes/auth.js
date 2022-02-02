@@ -4,15 +4,15 @@ const { getUserByName, createUser } = require("../utils/database");
 
 const authRoutes = express.Router();
 const authErrorCodes = {
-  "LOGIN_NO_CREDENTIALS": 0,
-  "LOGIN_BAD_CREDENTIALS": 1,
-  "LOGIN_ALREADY_LOGGED_IN": 2,
-  "LOGIN_ACCOUNT_NOT_FOUND": 3,
-  "REGISTER_NO_CREDENTIALS": 4,
-  "REGISTER_ACCOUNT_EXISTS": 5,
-  "REGISTER_COULD_NOT_CREATE": 6,
-  "LOGOUT_NOT_LOGGED_IN": 7
-}
+  "LOGIN_NO_CREDENTIALS": "0",
+  "LOGIN_BAD_CREDENTIALS": "1",
+  "LOGIN_ALREADY_LOGGED_IN": "2",
+  "LOGIN_ACCOUNT_NOT_FOUND": "3",
+  "REGISTER_NO_CREDENTIALS": "4",
+  "REGISTER_ACCOUNT_EXISTS": "5",
+  "REGISTER_COULD_NOT_CREATE": "6",
+  "LOGOUT_NOT_LOGGED_IN": "7"
+};
 
 authRoutes.post("/register", (req, res) => {
   const { name, password } = req.body;
