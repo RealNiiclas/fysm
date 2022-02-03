@@ -7,25 +7,23 @@ const express = require("express");
 const session = require("express-session");
 const store = require("memorystore")(session);
 const { initUserTable } = require("./utils/database");
+const { handleSocket, disconnectSocket } = require("./utils/socket");
 const { authRoutes } = require("./routes/auth");
-const config = require("../config.json");
 const { userRoutes } = require("./routes/user");
+const config = require("../config.json");
 
 const nextApp = next({ dev: config.debug });
 const handle = nextApp.getRequestHandler();
 
 const sessionMiddleware = session({ 
-  store: new store({ checkPeriod: 1000 * 60 * 60, dispose: (key) => {
-    socketApp.sockets.sockets.forEach(socket => {
-      if (socket.request.session.id !== key) return;
-      socket.emit("unauthed");
-      socket.disconnect();
-    });
-  }}),
+  resave: false,
   name: config.sessionCookieName,
   secret: config.sessionSecret,
   saveUninitialized: false,
-  resave: false,
+  store: new store({ 
+    checkPeriod: 1000 * 60 * 60,
+    dispose: (id) => disconnectSocket(socketApp, id)
+  }),
   cookie: {
     httpOnly: true,
     sameSite: "strict",
@@ -43,13 +41,7 @@ nextApp.prepare().then(() => {
   expressApp.all("*", (req, res) => handle(req, res));
 
   socketApp.use((socket, next) => sessionMiddleware(socket.request, {}, next));
-  socketApp.on("connection", (socket) => {
-    socket.on("message", (message) => socketApp.sockets.emit("message", { message, from: socket.request.session.name }));
-    if (!socket.request.session.name) {
-      socket.emit("unauthed");
-      socket.disconnect();
-    }
-  });
+  socketApp.on("connection", (socket) => handleSocket(socket));
 
   server.listen(config.serverPort, () => 
     console.log(`Server started on ${config.serverAddress}${config.serverIncludePort ? ":" + config.serverPort : ""}`));
