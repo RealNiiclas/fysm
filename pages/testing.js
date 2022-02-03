@@ -12,6 +12,7 @@ export default function Home() {
   const [status, setStatus] = useState("Warte ...");
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState("");
+  const [target, setTarget] = useState("");
 
   useEffect(() => {
     axios.post(`${config.serverAddress}${config.serverIncludePort ? ":" + config.serverPort : ""}/user`)
@@ -66,9 +67,13 @@ export default function Home() {
         socket.disconnect();
         socket = null;
         break;
-      default:
+      case "send":
         if (socket) 
           socket.emit("message", message);
+        break;
+      case "sendTo":
+        if (socket) 
+          socket.emit("messageTo", message, target);
         break;
     }
 
@@ -87,8 +92,10 @@ export default function Home() {
       <input type="button" value="Registrieren" onClick={(e) => run(e, "register")} /><br />
       <input type="button" value="Abmelden" onClick={(e) => run(e, "logout")} /><br /><br />
       <input type="text" placeholder="Nachricht" value={message} onChange={(e) => setMessage(e.target.value)} /><br />
+      <input type="text" placeholder="Empfänger" value={target} onChange={(e) => setTarget(e.target.value)} /><br />
       <textarea rows={8} cols={18} readOnly value={messages} /><br /><br />
-      <input type="button" value="Senden" onClick={(e) => run2(e, "send")} /><br />
+      <input type="button" value="Nachricht senden" onClick={(e) => run2(e, "send")} /><br />
+      <input type="button" value="Direkte Nachricht senden" onClick={(e) => run2(e, "sendTo")} /><br />
       <input type="button" value="Verbinden" onClick={(e) => run2(e, "connect")} /><br />
       <input type="button" value="Trennen" onClick={(e) => run2(e, "disconnect")} />
     </div>

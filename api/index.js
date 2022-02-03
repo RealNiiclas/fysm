@@ -41,7 +41,7 @@ nextApp.prepare().then(() => {
   expressApp.all("*", (req, res) => handle(req, res));
 
   socketApp.use((socket, next) => sessionMiddleware(socket.request, {}, next));
-  socketApp.on("connection", (socket) => handleSocket(socket));
+  socketApp.on("connection", (socket) => handleSocket(socketApp, socket));
 
   server.listen(config.serverPort, () => 
     console.log(`Server started on ${config.serverAddress}${config.serverIncludePort ? ":" + config.serverPort : ""}`));
