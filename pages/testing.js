@@ -55,8 +55,12 @@ export default function Home() {
         if (socket) return;
         socket = io(`${config.serverAddress}${config.serverIncludePort ? ":" + config.serverPort : ""}`, { reconnection: false });
         socket.on("connect", () => setMessages((prev) => `${prev}\nVerbindung aufgebaut!`.trim()));
-        socket.on("message", ({ message, from }) => setMessages((prev) => `${prev}\n${from}: ${message}`.trim()));
         socket.on("unauthed", () => setMessages((prev) => `${prev}\nNicht authentifiziert!`.trim()));
+        socket.on("message", (data) => {
+          if (data.direct && data.from) setMessages((prev) => `${prev}\nVon ${data.from}: ${data.message}`.trim())
+          else if (data.direct) setMessages((prev) => `${prev}\nAn ${data.to}: ${data.message}`.trim())
+          else setMessages((prev) => `${prev}\n${data.from}: ${data.message}`.trim())
+        });
         socket.on("disconnect", () => {
           setMessages((prev) => `${prev}\nVerbindung getrennt!`.trim())
           socket = null;

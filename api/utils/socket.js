@@ -13,8 +13,8 @@ function handleSocket(io, socket) {
       .find((sock) => sock.request.session.name === name);
     if (!receiver) return;
     
-    receiver.emit("message", { message, from: `Von ${socket.request.session.name}` });
-    socket.emit("message", { message, from: `An ${receiver.request.session.name}` })
+    receiver.emit("message", { message, from: socket.request.session.name, direct: true });
+    socket.emit("message", { message, to: receiver.request.session.name, direct: true })
   });
 }
 
