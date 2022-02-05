@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import config from "../config.json";
 
 let socket = null;
+let serverAddress = `${config.serverAddress}${config.serverIncludePort ? ":" + config.serverPort : ""}`;
 
 export default function Home() {
   const [name, setName] = useState("");
@@ -15,7 +16,7 @@ export default function Home() {
   const [target, setTarget] = useState("");
 
   useEffect(() => {
-    axios.post(`${config.serverAddress}${config.serverIncludePort ? ":" + config.serverPort : ""}/user`)
+    axios.post(`${serverAddress}/user`)
       .then((res) => setStatus(`Angemeldet als ${res.data}!`))
       .catch(() => setStatus("Nicht angemeldet!"));
   }, []);
@@ -26,22 +27,22 @@ export default function Home() {
 
     switch (type) {
       case "login":
-        axios.post(`${config.serverAddress}${config.serverIncludePort ? ":" + config.serverPort : ""}/login`, { name, password })
+        axios.post(`${serverAddress}/login`, { name, password })
           .then(() => setStatus("Anmeldung erfolgreich!"))
           .catch(() => setStatus("Anmeldung fehlgeschlagen!"));
         break;
       case "delete":
-        axios.post(`${config.serverAddress}${config.serverIncludePort ? ":" + config.serverPort : ""}/delete`, { password })
+        axios.post(`${serverAddress}/delete`, { password })
           .then(() => setStatus("Löschung erfolgreich!"))
           .catch(() => setStatus("Löschung fehlgeschlagen!"));
         break;
       case "logout":
-        axios.post(`${config.serverAddress}${config.serverIncludePort ? ":" + config.serverPort : ""}/logout`)
+        axios.post(`${serverAddress}/logout`)
           .then(() => setStatus("Abmeldung erfolgreich!"))
           .catch(() => setStatus("Abmeldung fehlgeschlagen!"));
         break;
       default:
-        axios.post(`${config.serverAddress}${config.serverIncludePort ? ":" + config.serverPort : ""}/register`, { name, password })
+        axios.post(`${serverAddress}/register`, { name, password })
           .then(() => setStatus("Registrierung erfolgreich!"))
           .catch(() => setStatus("Registrierung fehlgeschlagen!"));
         break;
@@ -58,7 +59,7 @@ export default function Home() {
     switch (type) {
       case "connect":
         if (socket) return;
-        socket = io(`${config.serverAddress}${config.serverIncludePort ? ":" + config.serverPort : ""}`, { reconnection: false });
+        socket = io(`${serverAddress}`, { reconnection: false });
         socket.on("connect", () => setMessages((prev) => `${prev}\nVerbindung aufgebaut!`.trim()));
         socket.on("unauthed", () => setMessages((prev) => `${prev}\nNicht authentifiziert!`.trim()));
         socket.on("message", (data) => {
