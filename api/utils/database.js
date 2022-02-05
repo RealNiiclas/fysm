@@ -16,7 +16,13 @@ function initUserTable() {
 }
 
 function createUser(name, password) {
-  try { db.prepare("INSERT INTO users (name, password) VALUES (?, ?)").run(name, password); } 
+  try { db.prepare("INSERT INTO users (name, password) VALUES (?, ?)").run(name, password); }
+  catch (err) { return false; }
+  return true;
+}
+
+function deleteUser(name) {
+  try { db.prepare("DELETE FROM users WHERE name=?").run(name); }
   catch (err) { return false; }
   return true;
 }
@@ -28,5 +34,6 @@ function getUserByName(name) {
 module.exports = {
   initUserTable,
   getUserByName,
-  createUser
+  createUser,
+  deleteUser
 };

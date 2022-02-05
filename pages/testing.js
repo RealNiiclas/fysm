@@ -30,6 +30,11 @@ export default function Home() {
           .then(() => setStatus("Anmeldung erfolgreich!"))
           .catch(() => setStatus("Anmeldung fehlgeschlagen!"));
         break;
+      case "delete":
+        axios.post(`${config.serverAddress}${config.serverIncludePort ? ":" + config.serverPort : ""}/delete`, { password })
+          .then(() => setStatus("Löschung erfolgreich!"))
+          .catch(() => setStatus("Löschung fehlgeschlagen!"));
+        break;
       case "logout":
         axios.post(`${config.serverAddress}${config.serverIncludePort ? ":" + config.serverPort : ""}/logout`)
           .then(() => setStatus("Abmeldung erfolgreich!"))
@@ -94,6 +99,7 @@ export default function Home() {
       <input type="password" placeholder="Passwort" value={password} onChange={(e) => setPassword(e.target.value)} /><br /><br />
       <input type="button" value="Anmelden" onClick={(e) => run(e, "login")} /><br />
       <input type="button" value="Registrieren" onClick={(e) => run(e, "register")} /><br />
+      <input type="button" value="Löschen" onClick={(e) => run(e, "delete")} /><br />
       <input type="button" value="Abmelden" onClick={(e) => run(e, "logout")} /><br /><br />
       <input type="text" placeholder="Nachricht" value={message} onChange={(e) => setMessage(e.target.value)} /><br />
       <input type="text" placeholder="Empfänger" value={target} onChange={(e) => setTarget(e.target.value)} /><br />
