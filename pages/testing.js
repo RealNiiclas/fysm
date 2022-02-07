@@ -21,72 +21,79 @@ export default function Home() {
       .catch(() => setStatus("Nicht angemeldet!"));
   }, []);
 
-  function run(event, type) {
+  function runOnClick(event) {
     event.preventDefault();
     document.activeElement.blur();
+  }
 
-    switch (type) {
-      case "login":
-        axios.post(`${serverAddress}/login`, { name, password })
-          .then(() => setStatus("Anmeldung erfolgreich!"))
-          .catch(() => setStatus("Anmeldung fehlgeschlagen!"));
-        break;
-      case "delete":
-        axios.post(`${serverAddress}/delete`, { password })
-          .then(() => setStatus("Löschung erfolgreich!"))
-          .catch(() => setStatus("Löschung fehlgeschlagen!"));
-        break;
-      case "logout":
-        axios.post(`${serverAddress}/logout`)
-          .then(() => setStatus("Abmeldung erfolgreich!"))
-          .catch(() => setStatus("Abmeldung fehlgeschlagen!"));
-        break;
-      default:
-        axios.post(`${serverAddress}/register`, { name, password })
-          .then(() => setStatus("Registrierung erfolgreich!"))
-          .catch(() => setStatus("Registrierung fehlgeschlagen!"));
-        break;
-    }
-
+  function login(event) {
+    runOnClick(event);
+    axios.post(`${serverAddress}/login`, { name, password })
+      .then(() => setStatus("Anmeldung erfolgreich!"))
+      .catch(() => setStatus("Anmeldung fehlgeschlagen!"));
     setPassword("");
     setName("");
   }
 
-  function run2(event, type) {
-    event.preventDefault();
-    document.activeElement.blur();
+  function logout(event) {
+    runOnClick(event);
+    axios.post(`${serverAddress}/logout`)
+      .then(() => setStatus("Abmeldung erfolgreich!"))
+      .catch(() => setStatus("Abmeldung fehlgeschlagen!"));
+  }
 
-    switch (type) {
-      case "connect":
-        if (socket) return;
-        socket = io(`${serverAddress}`, { reconnection: false });
-        socket.on("connect", () => setMessages((prev) => `${prev}\nVerbindung aufgebaut!`.trim()));
-        socket.on("unauthed", () => setMessages((prev) => `${prev}\nNicht authentifiziert!`.trim()));
-        socket.on("message", (data) => {
-          if (data.direct && data.from) setMessages((prev) => `${prev}\nVon ${data.from}: ${data.message}`.trim())
-          else if (data.direct) setMessages((prev) => `${prev}\nAn ${data.to}: ${data.message}`.trim())
-          else setMessages((prev) => `${prev}\n${data.from}: ${data.message}`.trim())
-        });
-        socket.on("disconnect", () => {
-          setMessages((prev) => `${prev}\nVerbindung getrennt!`.trim())
-          socket = null;
-        });
-        break;
-      case "disconnect": 
-        if (!socket) return;
-        socket.disconnect();
-        socket = null;
-        break;
-      case "send":
-        if (socket) 
-          socket.emit("message", message);
-        break;
-      case "sendTo":
-        if (socket) 
-          socket.emit("messageTo", message, target);
-        break;
-    }
+  function remove(event) {
+    runOnClick(event);
+    axios.post(`${serverAddress}/delete`, { password })
+      .then(() => setStatus("Löschung erfolgreich!"))
+      .catch(() => setStatus("Löschung fehlgeschlagen!"));
+    setPassword("");
+  }
 
+  function register(event) {
+    runOnClick(event);
+    axios.post(`${serverAddress}/register`, { name, password })
+      .then(() => setStatus("Registrierung erfolgreich!"))
+      .catch(() => setStatus("Registrierung fehlgeschlagen!"));
+    setPassword("");
+    setName("");
+  }
+
+  function connectChat(event) {
+    runOnClick(event);
+    if (socket) return;
+    socket = io(`${serverAddress}`, { reconnection: false });
+    socket.on("connect", () => setMessages((prev) => `${prev}\nVerbindung aufgebaut!`.trim()));
+    socket.on("unauthed", () => setMessages((prev) => `${prev}\nNicht authentifiziert!`.trim()));
+    socket.on("message", (data) => {
+      if (data.direct && data.from) setMessages((prev) => `${prev}\nVon ${data.from}: ${data.message}`.trim())
+      else if (data.direct) setMessages((prev) => `${prev}\nAn ${data.to}: ${data.message}`.trim())
+      else setMessages((prev) => `${prev}\n${data.from}: ${data.message}`.trim())
+    });
+    socket.on("disconnect", () => {
+      setMessages((prev) => `${prev}\nVerbindung getrennt!`.trim())
+      socket = null;
+    });
+  }
+
+  function disconnectChat(event) {
+    runOnClick(event);
+    if (!socket) return;
+    socket.disconnect();
+    socket = null;
+  }
+  
+  function sendMessage(event) {
+    runOnClick(event);
+    if (!socket) return;
+    socket.emit("message", message);
+    setMessage("");
+  }
+   
+  function sendMessageTo(event) {
+    runOnClick(event);
+    if (!socket) return;
+    socket.emit("messageTo", message, target);
     setMessage("");
   }
 
@@ -98,17 +105,20 @@ export default function Home() {
       <div>Status: {status}</div><br />
       <input type="text" placeholder="Name" value={name} onChange={(e) => setName(e.target.value)} /><br />
       <input type="password" placeholder="Passwort" value={password} onChange={(e) => setPassword(e.target.value)} /><br /><br />
-      <input type="button" value="Anmelden" onClick={(e) => run(e, "login")} /><br />
-      <input type="button" value="Registrieren" onClick={(e) => run(e, "register")} /><br />
-      <input type="button" value="Löschen" onClick={(e) => run(e, "delete")} /><br />
-      <input type="button" value="Abmelden" onClick={(e) => run(e, "logout")} /><br /><br />
+
+      <input type="button" value="Anmelden" onClick={(event) => login(event)} /><br />
+      <input type="button" value="Abmelden" onClick={(event) => logout(event)} /><br />
+      <input type="button" value="Registrieren" onClick={(event) => register(event)} /><br />
+      <input type="button" value="Löschen" onClick={(event) => remove(event)} /><br /><br />
+
       <input type="text" placeholder="Nachricht" value={message} onChange={(e) => setMessage(e.target.value)} /><br />
       <input type="text" placeholder="Empfänger" value={target} onChange={(e) => setTarget(e.target.value)} /><br />
       <textarea rows={8} cols={18} readOnly value={messages} /><br /><br />
-      <input type="button" value="Nachricht senden" onClick={(e) => run2(e, "send")} /><br />
-      <input type="button" value="Direkte Nachricht senden" onClick={(e) => run2(e, "sendTo")} /><br />
-      <input type="button" value="Verbinden" onClick={(e) => run2(e, "connect")} /><br />
-      <input type="button" value="Trennen" onClick={(e) => run2(e, "disconnect")} />
+
+      <input type="button" value="Verbinden" onClick={(event) => connectChat(event)} /><br />
+      <input type="button" value="Trennen" onClick={(event) => disconnectChat(event)} /><br />
+      <input type="button" value="Nachricht senden" onClick={(event) => sendMessage(event)} /><br />
+      <input type="button" value="Direkte Nachricht senden" onClick={(event) => sendMessageTo(event)} />
     </div>
   );
 }
