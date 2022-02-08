@@ -6,7 +6,7 @@ const next = require("next");
 const express = require("express");
 const session = require("express-session");
 const store = require("memorystore")(session);
-const { initUserTable } = require("./utils/database");
+const { initDatabase } = require("./utils/database");
 const { handleSocket, disconnectSocket } = require("./utils/socket");
 const { authRoutes } = require("./routes/auth");
 const { userRoutes } = require("./routes/user");
@@ -32,7 +32,7 @@ const sessionMiddleware = session({
 });
 
 nextApp.prepare().then(() => {
-  initUserTable();
+  initDatabase();
   
   expressApp.use(express.json());
   expressApp.use(sessionMiddleware);
