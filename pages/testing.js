@@ -14,6 +14,8 @@ export default function Home() {
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState("");
   const [target, setTarget] = useState("");
+  const [content, setContent] = useState("");
+  const [posts, setPosts] = useState([]);
 
   useEffect(() => {
     axios.post(`${serverAddress}/user`)
@@ -82,19 +84,33 @@ export default function Home() {
     socket.disconnect();
     socket = null;
   }
-  
+
   function sendMessage(event) {
     runOnClick(event);
     if (!socket) return;
     socket.emit("message", message);
     setMessage("");
   }
-   
+
   function sendMessageTo(event) {
     runOnClick(event);
     if (!socket) return;
     socket.emit("messageTo", message, target);
     setMessage("");
+  }
+
+  function post(event) {
+    runOnClick(event);
+    axios.post(`${serverAddress}/post`, { content })
+      .then(() => setStatus("Posten erfolgreich!"))
+      .catch(() => setStatus("Posten fehlgeschlagen!"));
+    setContent("");
+  }
+
+  function getPosts(event) {
+    runOnClick(event);
+    axios.post(`${serverAddress}/posts`)
+      .then((data) => setPosts(data.data)).catch(() => { });
   }
 
   return (
@@ -118,7 +134,15 @@ export default function Home() {
       <input type="button" value="Verbinden" onClick={(event) => connectChat(event)} /><br />
       <input type="button" value="Trennen" onClick={(event) => disconnectChat(event)} /><br />
       <input type="button" value="Nachricht senden" onClick={(event) => sendMessage(event)} /><br />
-      <input type="button" value="Direkte Nachricht senden" onClick={(event) => sendMessageTo(event)} />
+      <input type="button" value="Direkte Nachricht senden" onClick={(event) => sendMessageTo(event)} /><br /><br />
+
+      <textarea placeholder="Inhalt" rows={8} cols={18} value={content} onChange={(e) => setContent(e.target.value)} /><br /><br />
+      <input type="button" value="Posten" onClick={(event) => post(event)} /><br />
+      <input type="button" value="Laden" onClick={(event) => getPosts(event)} /><br /><br />
+
+      <ul>
+        {posts.map((post) => <li key={post.id}>{post.author}: {post.content}</li>)}
+      </ul>
     </div>
   );
 }

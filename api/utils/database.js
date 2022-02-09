@@ -1,6 +1,7 @@
 const fs = require("fs");
 const config = require("../../config.json");
 const database = require("better-sqlite3");
+const { v4 } = require("uuid");
 
 const outputPath = `${__dirname}/../../${config.databaseOutputPath}`;
 const outputDirectory = outputPath.substring(0, outputPath.lastIndexOf("/"));
@@ -45,9 +46,21 @@ function getUserByName(name) {
   return db.prepare("SELECT * FROM users WHERE name=?").get(name);
 }
 
+function createPost(author, content) {
+  try { db.prepare("INSERT INTO posts (id, author, content, time) VALUES (?, ?, ?, ?)").run(v4(), author, content, Date.now()); }
+  catch (err) { return false; }
+  return true;
+}
+
+function getPosts() {
+  return db.prepare("SELECT * FROM posts ORDER BY time DESC").all();
+}
+
 module.exports = {
   initDatabase,
   getUserByName,
   createUser,
-  deleteUser
+  deleteUser,
+  createPost,
+  getPosts
 };

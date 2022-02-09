@@ -1,5 +1,5 @@
 const { compareSync } = require("bcrypt");
-const { deleteUser, getUserByName } = require("../utils/database");
+const { deleteUser, getUserByName, createPost, getPosts } = require("../utils/database");
 const express = require("express");
 
 const userRoutes = express.Router();
@@ -9,7 +9,11 @@ const userErrorCodes = {
   "DELETE_NO_CREDENTIALS": "2",
   "DELETE_ACCOUNT_NOT_FOUND": "3",
   "DELETE_BAD_CREDENTIALS": "4",
-  "DELETE_COULD_NOT_DELETE": "5"
+  "DELETE_COULD_NOT_DELETE": "5",
+  "POST_NOT_LOGGED_IN": "6",
+  "POST_COULD_NOT_CREATE": "7",
+  "POST_NO_CONTENT": "8",
+  "POSTS_NOT_LOGGED_IN": "9"
 };
 
 userRoutes.post("/user", (req, res) => {
@@ -41,6 +45,29 @@ userRoutes.post("/delete", (req, res) => {
 
   req.session.destroy();
   return res.sendStatus(200);
+});
+
+userRoutes.post("/post", (req, res) => {
+  if (!req.session.name) return res.status(403)
+    .send(userErrorCodes.POST_NOT_LOGGED_IN);
+
+  const { content } = req.body;
+  if (!content) return res.status(403)
+    .send(userErrorCodes.POST_NO_CONTENT);
+
+  const isSuccessful = createPost(req.session.name, content);
+  if (!isSuccessful) return res.status(403)
+    .send(userErrorCodes.POST_COULD_NOT_CREATE);
+
+  return res.sendStatus(200);
+});
+
+userRoutes.post("/posts", (req, res) => {
+  if (!req.session.name) return res.status(403)
+    .send(userErrorCodes.POSTS_NOT_LOGGED_IN);
+
+  const posts = getPosts();
+  return res.json(posts);
 });
 
 module.exports = {
