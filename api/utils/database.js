@@ -10,23 +10,32 @@ fs.mkdirSync(outputDirectory, { recursive: true });
 const db = new database(outputPath);
 
 function initDatabase() {
-  initUserTable();
-  initPostTable();
+  initUsersTable();
+  initPostsTable();
+  initFriendsTable();
 }
 
-function initUserTable() {
+function initUsersTable() {
   db.prepare(`CREATE TABLE IF NOT EXISTS users (
-    name TEXT UNIQUE NOT NULL,
+    name TEXT PRIMARY KEY,
     password TEXT NOT NULL
   )`).run();
 }
 
-function initPostTable() {
+function initPostsTable() {
   db.prepare(`CREATE TABLE IF NOT EXISTS posts (
-    id TEXT UNIQUE NOT NULL,
+    id TEXT PRIMARY KEY,
     author TEXT NOT NULL,
     content TEXT NOT NULL,
     time DATE NOT NULL
+  )`).run();
+}
+
+function initFriendsTable() {
+  db.prepare(`CREATE TABLE IF NOT EXISTS friends (
+    userOne TEXT REFERENCES users (name),
+    userTwo TEXT REFERENCES users (name),
+    accepted BOOLEAN NOT NULL
   )`).run();
 }
 
@@ -56,11 +65,39 @@ function getPosts() {
   return db.prepare("SELECT * FROM posts ORDER BY time DESC").all();
 }
 
+function addFriend(userOne, userTwo) {
+  try { db.prepare("INSERT INTO friends (userOne, userTwo, accepted) VALUES (?, ?, ?)").run(userOne, userTwo, false); }
+  catch (err) { return false; }
+  return true;
+}
+
+function acceptFriend(userOne, userTwo) {
+  try { db.prepare("UPDATE friends SET accepted=? WHERE (userOne=$userOne AND userTwo=$userTwo) OR (userTwo=$userTwo AND userOne=$userOne)").run(true, { userOne, userTwo }); }
+  catch (err) { return false; }
+  return true;
+}
+
+function removeFriend(userOne, userTwo) {
+  try { db.prepare("DELETE FROM friends WHERE (userOne=$userOne AND userTwo=$userTwo) OR (userTwo=$userTwo AND userOne=$userOne)").run({ userOne, userTwo }); }
+  catch (err) { return false; }
+  return true;
+}
+
+function getFriends(name) {
+  const friends = db.prepare("SELECT userTwo FROM friends WHERE userOne=?").all(name);
+  friends.push(...db.prepare("SELECT userOne FROM friends WHERE userTwo=?").all(name));
+  return friends;
+}
+
 module.exports = {
   initDatabase,
   getUserByName,
   createUser,
   deleteUser,
   createPost,
-  getPosts
+  getPosts,
+  addFriend,
+  acceptFriend,
+  removeFriend,
+  getFriends
 };
