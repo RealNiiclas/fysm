@@ -16,6 +16,8 @@ export default function Home() {
   const [target, setTarget] = useState("");
   const [content, setContent] = useState("");
   const [posts, setPosts] = useState([]);
+  const [friendName, setFriendName] = useState("");
+  const [friends, setFriends] = useState([]);
 
   useEffect(() => {
     axios.post(`${serverAddress}/user`)
@@ -113,6 +115,36 @@ export default function Home() {
       .then((data) => setPosts(data.data)).catch(() => { });
   }
 
+  function addFriend(event) {
+    runOnClick(event);
+    axios.post(`${serverAddress}/addFriend`, { friendName })
+      .then(() => setStatus("Freundschaftsanfrage erfolgreich!"))
+      .catch(() => setStatus("Freundschaftsanfrage fehlgeschlagen!"));
+    setFriendName("");
+  }
+
+  function removeFriend(event) {
+    runOnClick(event);
+    axios.post(`${serverAddress}/removeFriend`, { friendName })
+      .then(() => setStatus("Entfernung erfolgreich!"))
+      .catch(() => setStatus("Entfernung fehlgeschlagen!"));
+    setFriendName("");
+  }
+
+  function acceptFriend(event) {
+    runOnClick(event);
+    axios.post(`${serverAddress}/acceptFriend`, { friendName })
+      .then(() => setStatus("Akzeptierung erfolgreich!"))
+      .catch(() => setStatus("Akzeptierung fehlgeschlagen!"));
+    setFriendName("");
+  }
+
+  function fetchFriends(event) {
+    runOnClick(event);
+    axios.post(`${serverAddress}/friends`)
+      .then((data) => setFriends(data.data)).catch((err) => { console.log(err); });
+  }
+
   return (
     <div style={{ margin: ".5rem" }}>
       <Head>
@@ -142,6 +174,16 @@ export default function Home() {
 
       <ul>
         {posts.map((post) => <li key={post.id}>{post.author}: {post.content}</li>)}
+      </ul>{posts.length > 0 && <br />}
+
+      <input type="text" placeholder="Name" value={friendName} onChange={(e) => setFriendName(e.target.value)} /><br /><br />
+      <input type="button" value="Freund hinzufügen" onClick={(event) => addFriend(event)} /><br />
+      <input type="button" value="Freund entfernen" onClick={(event) => removeFriend(event)} /><br />
+      <input type="button" value="Freund akzeptieren" onClick={(event) => acceptFriend(event)} /><br />
+      <input type="button" value="Freunde laden" onClick={(event) => fetchFriends(event)} /><br /><br />
+
+      <ul>
+        {friends.map((friend) => <li key={friend.id}>{friend.name} ({friend.accepted})</li>)}
       </ul>
     </div>
   );
