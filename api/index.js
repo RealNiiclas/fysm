@@ -21,6 +21,7 @@ const sessionMiddleware = session({
   secret: config.sessionSecret,
   saveUninitialized: false,
   store: new store({ 
+    noDisposeOnSet: true,
     checkPeriod: 1000 * 60 * 60,
     dispose: (id) => disconnectSocket(socketApp, id)
   }),

@@ -1,144 +1,84 @@
 const { compareSync } = require("bcrypt");
+const { checkAuth } = require("../utils/middleware");
 const { deleteUser, getUserByName, createPost, getPosts, addFriend, getFriends, acceptFriend, removeFriend } = require("../utils/database");
 const express = require("express");
 
 const userRoutes = express.Router();
-const userErrorCodes = {
-  "USER_NOT_LOGGED_IN": "0",
-  "DELETE_NOT_LOGGED_IN": "1",
-  "DELETE_NO_CREDENTIALS": "2",
-  "DELETE_ACCOUNT_NOT_FOUND": "3",
-  "DELETE_BAD_CREDENTIALS": "4",
-  "DELETE_COULD_NOT_DELETE": "5",
-  "POST_NOT_LOGGED_IN": "6",
-  "POST_COULD_NOT_CREATE": "7",
-  "POST_NO_CONTENT": "8",
-  "POSTS_NOT_LOGGED_IN": "9",
-  "ADD_FRIEND_NOT_LOGGED_IN": "10",
-  "ADD_FRIEND_NO_CONTENT": "11",
-  "ADD_FRIEND_IS_ALREADY_FRIEND": "12",
-  "ADD_FRIEND_COULD_NOT_CREATE": "13",
-  "ACCEPT_FRIEND_NOT_LOGGED_IN": "14",
-  "ACCEPT_FRIEND_NO_CONTENT": "15",
-  "ACCEPT_FRIEND_COULD_NOT_CREATE": "16",
-  "REMOVE_FRIEND_NOT_LOGGED_IN": "17",
-  "REMOVE_FRIEND_NO_CONTENT": "18",
-  "REMOVE_FRIEND_COULD_NOT_CREATE": "19",
-  "FRIENDS_NOT_LOGGED_IN": "20"
-};
 
-userRoutes.post("/user", (req, res) => {
-  if (!req.session.name) return res.status(403)
-    .send(userErrorCodes.USER_NOT_LOGGED_IN);
-
+userRoutes.post("/user", checkAuth(), (req, res) => {
   return res.send(req.session.name);
 });
 
-userRoutes.post("/delete", (req, res) => {
-  if (!req.session.name) return res.status(403)
-    .send(userErrorCodes.DELETE_NOT_LOGGED_IN);
-
+userRoutes.post("/delete", checkAuth(), (req, res) => {
   const { password } = req.body;
-  if (!password) return res.status(403)
-    .send(userErrorCodes.DELETE_NO_CREDENTIALS);
+  if (!password) return res.sendStatus(400);
 
   const foundUser = getUserByName(req.session.name);
-  if (!foundUser) return res.status(403)
-    .send(userErrorCodes.DELETE_ACCOUNT_NOT_FOUND);
+  if (!foundUser) return res.sendStatus(400);
 
   const isPasswordCorrect = compareSync(password, foundUser.password);
-  if (!isPasswordCorrect) return res.status(403)
-    .send(userErrorCodes.DELETE_BAD_CREDENTIALS);
+  if (!isPasswordCorrect) return res.sendStatus(400);
 
   const isSuccessful = deleteUser(req.session.name);
-  if (!isSuccessful) return res.status(403)
-    .send(userErrorCodes.DELETE_COULD_NOT_DELETE);
+  if (!isSuccessful) return res.sendStatus(400);
 
   req.session.destroy();
   return res.sendStatus(200);
 });
 
-userRoutes.post("/post", (req, res) => {
-  if (!req.session.name) return res.status(403)
-    .send(userErrorCodes.POST_NOT_LOGGED_IN);
-
+userRoutes.post("/post", checkAuth(), (req, res) => {
   const { content } = req.body;
-  if (!content) return res.status(403)
-    .send(userErrorCodes.POST_NO_CONTENT);
+  if (!content) return res.sendStatus(400);
 
   const isSuccessful = createPost(req.session.name, content);
-  if (!isSuccessful) return res.status(403)
-    .send(userErrorCodes.POST_COULD_NOT_CREATE);
+  if (!isSuccessful) return res.sendStatus(400);
 
   return res.sendStatus(200);
 });
 
-userRoutes.post("/posts", (req, res) => {
-  if (!req.session.name) return res.status(403)
-    .send(userErrorCodes.POSTS_NOT_LOGGED_IN);
-
+userRoutes.post("/posts", checkAuth(), (req, res) => {
   const posts = getPosts();
   return res.json(posts);
 });
 
-userRoutes.post("/addFriend", (req, res) => {
-  if (!req.session.name) return res.status(403)
-    .send(userErrorCodes.ADD_FRIEND_NOT_LOGGED_IN);
-
+userRoutes.post("/addFriend", checkAuth(), (req, res) => {
   const { friendName } = req.body;
-  if (!friendName) return res.status(403)
-    .send(userErrorCodes.ADD_FRIEND_NO_CONTENT);
+  if (!friendName) return res.sendStatus(400);
 
   const isUser = friendName === req.session.name;
-  if (isUser) return res.status(403)
-    .send(userErrorCodes.ADD_FRIEND_COULD_NOT_CREATE);
+  if (isUser) return res.sendStatus(400);
 
   const isSuccessful = addFriend(req.session.name, friendName);
-  if (!isSuccessful) return res.status(403)
-    .send(userErrorCodes.ADD_FRIEND_COULD_NOT_CREATE);
+  if (!isSuccessful) return res.sendStatus(400);
 
   return res.sendStatus(200);
 });
 
-userRoutes.post("/acceptFriend", (req, res) => {
-  if (!req.session.name) return res.status(403)
-    .send(userErrorCodes.ACCEPT_FRIEND_NOT_LOGGED_IN);
-
+userRoutes.post("/acceptFriend", checkAuth(), (req, res) => {
   const { friendName } = req.body;
-  if (!friendName) return res.status(403)
-    .send(userErrorCodes.ACCEPT_FRIEND_NO_CONTENT);
+  if (!friendName) return res.sendStatus(400);
 
   const isSuccessful = acceptFriend(req.session.name, friendName);
-  if (!isSuccessful) return res.status(403)
-    .send(userErrorCodes.ACCEPT_FRIEND_COULD_NOT_CREATE);
+  if (!isSuccessful) return res.sendStatus(400);
 
   return res.sendStatus(200);
 });
 
-userRoutes.post("/removeFriend", (req, res) => {
-  if (!req.session.name) return res.status(403)
-    .send(userErrorCodes.REMOVE_FRIEND_NOT_LOGGED_IN);
-
+userRoutes.post("/removeFriend", checkAuth(), (req, res) => {
   const { friendName } = req.body;
-  if (!friendName) return res.status(403)
-    .send(userErrorCodes.REMOVE_FRIEND_NO_CONTENT);
+  if (!friendName) return res.sendStatus(400);
 
   const isSuccessful = removeFriend(req.session.name, friendName);
-  if (!isSuccessful) return res.status(403)
-    .send(userErrorCodes.REMOVE_FRIEND_COULD_NOT_CREATE);
+  if (!isSuccessful) return res.sendStatus(400);
 
   return res.sendStatus(200);
 });
 
-userRoutes.post("/friends", (req, res) => {
-  if (!req.session.name) return res.status(403)
-    .send(userErrorCodes.FRIENDS_NOT_LOGGED_IN);
-
+userRoutes.post("/friends", checkAuth(), (req, res) => {
   const friends = getFriends(req.session.name);
   return res.json(friends);
 });
 
 module.exports = {
-  userRoutes,
-  userErrorCodes
+  userRoutes
 };

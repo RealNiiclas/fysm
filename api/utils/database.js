@@ -41,15 +41,13 @@ function initFriendsTable() {
 }
 
 function createUser(name, password) {
-  try { db.prepare("INSERT INTO users (name, password) VALUES (?, ?)").run(name, password); }
+  try { return db.prepare("INSERT INTO users (name, password) VALUES (?, ?)").run(name, password).changes > 0; }
   catch (err) { return false; }
-  return true;
 }
 
 function deleteUser(name) {
-  try { db.prepare("DELETE FROM users WHERE name=?").run(name); }
+  try { return db.prepare("DELETE FROM users WHERE name=?").run(name).changes > 0; }
   catch (err) { return false; }
-  return true;
 }
 
 function getUserByName(name) {
@@ -57,9 +55,8 @@ function getUserByName(name) {
 }
 
 function createPost(author, content) {
-  try { db.prepare("INSERT INTO posts (id, author, content, time) VALUES (?, ?, ?, ?)").run(v4(), author, content, Date.now()); }
+  try { return db.prepare("INSERT INTO posts (id, author, content, time) VALUES (?, ?, ?, ?)").run(v4(), author, content, Date.now()).changes > 0; }
   catch (err) { return false; }
-  return true;
 }
 
 function getPosts() {
