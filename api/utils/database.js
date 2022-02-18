@@ -59,8 +59,11 @@ function createPost(author, content) {
   catch (err) { return false; }
 }
 
-function getPosts() {
-  return db.prepare("SELECT * FROM posts ORDER BY time DESC").all();
+function getPosts(name) {
+  return db.prepare(`SELECT DISTINCT posts.id, author, content, time FROM posts, friends WHERE 
+    friends.accepted=1 AND (posts.author=friends.sender OR posts.author=friends.receiver)
+    AND (friends.sender=? OR friends.receiver=?)
+    ORDER BY time DESC`).all(name, name);
 }
 
 function addFriend(sender, receiver) {

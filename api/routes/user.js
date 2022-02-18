@@ -37,7 +37,7 @@ userRoutes.post("/post", checkAuth(), (req, res) => {
 });
 
 userRoutes.post("/posts", checkAuth(), (req, res) => {
-  const posts = getPosts();
+  const posts = getPosts(req.session.name);
   return res.json(posts);
 });
 
