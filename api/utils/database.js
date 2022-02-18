@@ -60,7 +60,8 @@ function createPost(author, content) {
 }
 
 function getPosts(name) {
-  return db.prepare(`SELECT DISTINCT posts.id, author, content, time FROM posts, friends WHERE 
+  if (getFriends(name).length <= 0) return db.prepare("SELECT * FROM posts WHERE author=?").all(name);
+  return db.prepare(`SELECT DISTINCT posts.id, author, content, time FROM posts, friends WHERE
     friends.accepted=1 AND (posts.author=friends.sender OR posts.author=friends.receiver)
     AND (friends.sender=? OR friends.receiver=?)
     ORDER BY time DESC`).all(name, name);

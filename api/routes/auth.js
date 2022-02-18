@@ -12,6 +12,13 @@ authRoutes.post("/register", checkAuth(false), (req, res) => {
   const foundUser = getUserByName(name);
   if (foundUser) return res.sendStatus(400);
 
+  const isLengthValid = name.length <= 20 && name.length >= 3
+    && password.length <= 64 && password.length >= 8;
+  if (!isLengthValid) return res.sendStatus(400);
+
+  const isNameValid = name.match("^[a-zA-Z0-9]+$");
+  if (!isNameValid) return res.sendStatus(400);
+
   const salt = genSaltSync(12);
   const hashedPassword = hashSync(password, salt);
   const isSuccessful = createUser(name, hashedPassword);
