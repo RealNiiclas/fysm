@@ -1,6 +1,6 @@
 const { compareSync } = require("bcrypt");
 const { checkAuth } = require("../utils/middleware");
-const { deleteUser, getUserByName, createPost, getPosts, addFriend, getFriends, acceptFriend, removeFriend } = require("../utils/database");
+const { deleteUser, getUserByName, createPost, getPosts, addFriend, getFriends, acceptFriend, removeFriend, deletePosts, deleteFriends } = require("../utils/database");
 const express = require("express");
 
 const userRoutes = express.Router();
@@ -19,7 +19,8 @@ userRoutes.post("/delete", checkAuth(), (req, res) => {
   const isPasswordCorrect = compareSync(password, foundUser.password);
   if (!isPasswordCorrect) return res.sendStatus(400);
 
-  const isSuccessful = deleteUser(req.session.name);
+  const isSuccessful = deletePosts(req.session.name)
+    && deleteFriends(req.session.name) && deleteUser(req.session.name);
   if (!isSuccessful) return res.sendStatus(400);
 
   req.session.destroy();

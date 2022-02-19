@@ -59,6 +59,12 @@ function createPost(author, content) {
   catch (err) { return false; }
 }
 
+function deletePosts(author) {
+  if (db.prepare("SELECT * FROM posts WHERE author=?").all(author).length === 0) return true;
+  try { return db.prepare("DELETE FROM posts WHERE author=?").run(author).changes > 0; }
+  catch (err) { return false; }
+}
+
 function getPosts(name) {
   if (getFriends(name).length <= 0) return db.prepare("SELECT * FROM posts WHERE author=?").all(name);
   return db.prepare(`SELECT DISTINCT posts.id, author, content, time FROM posts, friends WHERE
@@ -76,6 +82,12 @@ function addFriend(sender, receiver) {
 function acceptFriend(receiver, sender) {
   try { return db.prepare("UPDATE friends SET accepted=1 WHERE receiver=? AND sender=? AND accepted=0").run(receiver, sender).changes > 0; }
   catch (err) { return false; }
+}
+
+function deleteFriends(name) {
+  if (db.prepare("SELECT * FROM friends WHERE (sender=? OR receiver=?)").all(name, name).length === 0) return true;
+  try { return db.prepare("DELETE FROM friends WHERE (sender=? OR receiver=?)").run(name, name).changes > 0; }
+  catch (err) { console.log(err); return false; }
 }
 
 function removeFriend(name, nameFriend) {
@@ -96,9 +108,11 @@ module.exports = {
   createUser,
   deleteUser,
   createPost,
+  deletePosts,
   getPosts,
   addFriend,
   acceptFriend,
+  deleteFriends,
   removeFriend,
   getFriends
 };
