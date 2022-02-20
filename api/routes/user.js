@@ -1,6 +1,6 @@
 const { compareSync } = require("bcrypt");
 const { checkAuth } = require("../utils/middleware");
-const { deleteUser, getUserByName, createPost, getPosts, addFriend, getFriends, acceptFriend, removeFriend, deletePosts, deleteFriends } = require("../utils/database");
+const { deleteUser, getUserByName, deletePosts, deleteFriends } = require("../utils/database");
 const express = require("express");
 
 const userRoutes = express.Router();
@@ -25,59 +25,6 @@ userRoutes.post("/delete", checkAuth(), (req, res) => {
 
   req.session.destroy();
   return res.sendStatus(200);
-});
-
-userRoutes.post("/post", checkAuth(), (req, res) => {
-  const { content } = req.body;
-  if (!content) return res.sendStatus(400);
-
-  const isSuccessful = createPost(req.session.name, content);
-  if (!isSuccessful) return res.sendStatus(400);
-
-  return res.sendStatus(200);
-});
-
-userRoutes.post("/posts", checkAuth(), (req, res) => {
-  const posts = getPosts(req.session.name);
-  return res.json(posts);
-});
-
-userRoutes.post("/addFriend", checkAuth(), (req, res) => {
-  const { friendName } = req.body;
-  if (!friendName) return res.sendStatus(400);
-
-  const isUser = friendName === req.session.name;
-  if (isUser) return res.sendStatus(400);
-
-  const isSuccessful = addFriend(req.session.name, friendName);
-  if (!isSuccessful) return res.sendStatus(400);
-
-  return res.sendStatus(200);
-});
-
-userRoutes.post("/acceptFriend", checkAuth(), (req, res) => {
-  const { friendName } = req.body;
-  if (!friendName) return res.sendStatus(400);
-
-  const isSuccessful = acceptFriend(req.session.name, friendName);
-  if (!isSuccessful) return res.sendStatus(400);
-
-  return res.sendStatus(200);
-});
-
-userRoutes.post("/removeFriend", checkAuth(), (req, res) => {
-  const { friendName } = req.body;
-  if (!friendName) return res.sendStatus(400);
-
-  const isSuccessful = removeFriend(req.session.name, friendName);
-  if (!isSuccessful) return res.sendStatus(400);
-
-  return res.sendStatus(200);
-});
-
-userRoutes.post("/friends", checkAuth(), (req, res) => {
-  const friends = getFriends(req.session.name);
-  return res.json(friends);
 });
 
 module.exports = {

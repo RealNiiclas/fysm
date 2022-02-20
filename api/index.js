@@ -10,17 +10,19 @@ const { initDatabase } = require("./utils/database");
 const { handleSocket, disconnectSocket } = require("./utils/socket");
 const { authRoutes } = require("./routes/auth");
 const { userRoutes } = require("./routes/user");
+const { postRoutes } = require("./routes/post");
+const { friendRoutes } = require("./routes/friend");
 const config = require("../config.json");
 
 const nextApp = next({ dev: config.debug });
 const handle = nextApp.getRequestHandler();
 
-const sessionMiddleware = session({ 
+const sessionMiddleware = session({
   resave: false,
   name: config.sessionCookieName,
   secret: config.sessionSecret,
   saveUninitialized: false,
-  store: new store({ 
+  store: new store({
     noDisposeOnSet: true,
     checkPeriod: 1000 * 60 * 60,
     dispose: (id) => disconnectSocket(socketApp, id)
@@ -34,16 +36,18 @@ const sessionMiddleware = session({
 
 nextApp.prepare().then(() => {
   initDatabase();
-  
+
   expressApp.use(express.json());
   expressApp.use(sessionMiddleware);
   expressApp.use("/", authRoutes);
   expressApp.use("/", userRoutes);
+  expressApp.use("/", postRoutes);
+  expressApp.use("/", friendRoutes);
   expressApp.all("*", (req, res) => handle(req, res));
 
   socketApp.use((socket, next) => sessionMiddleware(socket.request, {}, next));
   socketApp.on("connection", (socket) => handleSocket(socketApp, socket));
 
-  server.listen(config.serverPort, () => 
+  server.listen(config.serverPort, () =>
     console.log(`Server started on ${config.serverAddress}${config.serverIncludePort ? ":" + config.serverPort : ""}`));
 });
