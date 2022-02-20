@@ -4,17 +4,12 @@ function handleSocket(io, socket) {
     socket.disconnect();
     return;
   }
-
-  socket.on("message", (message) => 
-    io.sockets.emit("message", { message, from: socket.request.session.name }));
-  
   socket.on("messageTo", (message, name) => {
     const receiver = Array.from(io.sockets.sockets.values())
-      .find((sock) => sock.request.session.name === name);
-    if (!receiver) return;
-    
-    receiver.emit("message", { message, from: socket.request.session.name, direct: true });
-    socket.emit("message", { message, to: receiver.request.session.name, direct: true })
+      .find((sock) => sock.request.session.name === name && name !== socket.request.session.name);
+    if (!receiver) return socket.emit("message", { failed: true });
+    receiver.emit("message", { message, from: socket.request.session.name });
+    socket.emit("message", { message, to: receiver.request.session.name });
   });
 }
 

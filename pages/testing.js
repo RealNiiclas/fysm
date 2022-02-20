@@ -70,9 +70,9 @@ export default function Home() {
     socket.on("connect", () => setMessages((prev) => `${prev}\nVerbindung aufgebaut!`.trim()));
     socket.on("unauthed", () => setMessages((prev) => `${prev}\nNicht authentifiziert!`.trim()));
     socket.on("message", (data) => {
-      if (data.direct && data.from) setMessages((prev) => `${prev}\nVon ${data.from}: ${data.message}`.trim())
-      else if (data.direct) setMessages((prev) => `${prev}\nAn ${data.to}: ${data.message}`.trim())
-      else setMessages((prev) => `${prev}\n${data.from}: ${data.message}`.trim())
+      if (data.failed) setMessages((prev) => `${prev}\nSenden fehlgeschlagen!`.trim());
+      else if (data.from) setMessages((prev) => `${prev}\nVon ${data.from}: ${data.message}`.trim())
+      else setMessages((prev) => `${prev}\nAn ${data.to}: ${data.message}`.trim())
     });
     socket.on("disconnect", () => {
       setMessages((prev) => `${prev}\nVerbindung getrennt!`.trim())
@@ -85,13 +85,6 @@ export default function Home() {
     if (!socket) return;
     socket.disconnect();
     socket = null;
-  }
-
-  function sendMessage(event) {
-    runOnClick(event);
-    if (!socket) return;
-    socket.emit("message", message);
-    setMessage("");
   }
 
   function sendMessageTo(event) {
@@ -165,8 +158,7 @@ export default function Home() {
 
       <input type="button" value="Verbinden" onClick={(event) => connectChat(event)} /><br />
       <input type="button" value="Trennen" onClick={(event) => disconnectChat(event)} /><br />
-      <input type="button" value="Nachricht senden" onClick={(event) => sendMessage(event)} /><br />
-      <input type="button" value="Direkte Nachricht senden" onClick={(event) => sendMessageTo(event)} /><br /><br />
+      <input type="button" value="Nachricht senden" onClick={(event) => sendMessageTo(event)} /><br /><br />
 
       <textarea placeholder="Inhalt" rows={8} cols={18} value={content} onChange={(e) => setContent(e.target.value)} /><br /><br />
       <input type="button" value="Posten" onClick={(event) => post(event)} /><br />
