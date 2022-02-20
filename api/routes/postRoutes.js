@@ -1,4 +1,4 @@
-const { checkAuth } = require("../utils/middleware");
+const { checkAuth } = require("../other/middleware");
 const { createPost, getPosts } = require("../database/postsTable");
 const express = require("express");
 

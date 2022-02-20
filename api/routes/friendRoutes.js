@@ -1,4 +1,4 @@
-const { checkAuth } = require("../utils/middleware");
+const { checkAuth } = require("../other/middleware");
 const { addFriend, getFriends, acceptFriend, removeFriend } = require("../database/friendsTable");
 const express = require("express");
 

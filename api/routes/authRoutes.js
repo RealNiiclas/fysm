@@ -1,7 +1,7 @@
 const express = require("express");
 const { genSaltSync, hashSync, compareSync } = require("bcrypt");
 const { getUserByName, createUser } = require("../database/usersTable");
-const { checkAuth } = require("../utils/middleware");
+const { checkAuth } = require("../other/middleware");
 
 const authRoutes = express.Router();
 
