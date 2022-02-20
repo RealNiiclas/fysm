@@ -1,5 +1,5 @@
 const { checkAuth } = require("../utils/middleware");
-const { createPost, getPosts } = require("../utils/database");
+const { createPost, getPosts } = require("../database/postsTable");
 const express = require("express");
 
 const postRoutes = express.Router();

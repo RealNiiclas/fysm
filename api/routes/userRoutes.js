@@ -1,6 +1,6 @@
 const { compareSync } = require("bcrypt");
 const { checkAuth } = require("../utils/middleware");
-const { deleteUser, getUserByName, deletePosts, deleteFriends } = require("../utils/database");
+const { deleteUser, getUserByName, deletePosts, deleteFriends } = require("../database/usersTable");
 const express = require("express");
 
 const userRoutes = express.Router();

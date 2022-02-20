@@ -1,5 +1,5 @@
 const { checkAuth } = require("../utils/middleware");
-const { addFriend, getFriends, acceptFriend, removeFriend } = require("../utils/database");
+const { addFriend, getFriends, acceptFriend, removeFriend } = require("../database/friendsTable");
 const express = require("express");
 
 const friendRoutes = express.Router();

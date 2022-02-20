@@ -6,13 +6,15 @@ const next = require("next");
 const express = require("express");
 const session = require("express-session");
 const store = require("memorystore")(session);
-const { initDatabase } = require("./utils/database");
 const { handleSocket, disconnectSocket } = require("./utils/socket");
-const { authRoutes } = require("./routes/auth");
-const { userRoutes } = require("./routes/user");
-const { postRoutes } = require("./routes/post");
-const { friendRoutes } = require("./routes/friend");
+const { authRoutes } = require("./routes/authRoutes");
+const { userRoutes } = require("./routes/userRoutes");
+const { postRoutes } = require("./routes/postRoutes");
+const { friendRoutes } = require("./routes/friendRoutes");
 const config = require("../config.json");
+const { initUsersTable } = require("./database/usersTable");
+const { initPostsTable } = require("./database/postsTable");
+const { initFriendsTable } = require("./database/friendsTable");
 
 const nextApp = next({ dev: config.debug });
 const handle = nextApp.getRequestHandler();
@@ -35,7 +37,9 @@ const sessionMiddleware = session({
 });
 
 nextApp.prepare().then(() => {
-  initDatabase();
+  initUsersTable();
+  initPostsTable();
+  initFriendsTable();
 
   expressApp.use(express.json());
   expressApp.use(sessionMiddleware);
