@@ -8,13 +8,13 @@ function initUsersTable() {
 }
 
 function createUser(name, password) {
-  try { return db.prepare("INSERT INTO users (name, password) VALUES (?, ?)").run(name, password).changes > 0; }
-  catch (err) { return false; }
+  try { return db.prepare("INSERT INTO users (name, password) VALUES (?, ?)").run(name, password).changes; }
+  catch (err) { return -1; }
 }
 
 function deleteUser(name) {
-  try { return db.prepare("DELETE FROM users WHERE name=?").run(name).changes > 0; }
-  catch (err) { return false; }
+  try { return db.prepare("DELETE FROM users WHERE name=?").run(name).changes; }
+  catch (err) { return -1; }
 }
 
 function getUserByName(name) {

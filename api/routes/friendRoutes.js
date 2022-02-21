@@ -11,7 +11,7 @@ friendRoutes.post("/addFriend", checkAuth(), (req, res) => {
   const isUser = friendName === req.session.name;
   if (isUser) return res.sendStatus(400);
 
-  const isSuccessful = addFriend(req.session.name, friendName);
+  const isSuccessful = addFriend(req.session.name, friendName) > 0;
   if (!isSuccessful) return res.sendStatus(400);
 
   return res.sendStatus(200);
@@ -21,7 +21,7 @@ friendRoutes.post("/acceptFriend", checkAuth(), (req, res) => {
   const { friendName } = req.body;
   if (!friendName) return res.sendStatus(400);
 
-  const isSuccessful = acceptFriend(req.session.name, friendName);
+  const isSuccessful = acceptFriend(req.session.name, friendName) > 0;
   if (!isSuccessful) return res.sendStatus(400);
 
   return res.sendStatus(200);
@@ -31,7 +31,7 @@ friendRoutes.post("/removeFriend", checkAuth(), (req, res) => {
   const { friendName } = req.body;
   if (!friendName) return res.sendStatus(400);
 
-  const isSuccessful = removeFriend(req.session.name, friendName);
+  const isSuccessful = removeFriend(req.session.name, friendName) > 0;
   if (!isSuccessful) return res.sendStatus(400);
 
   return res.sendStatus(200);

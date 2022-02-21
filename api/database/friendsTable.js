@@ -11,24 +11,23 @@ function initFriendsTable() {
 
 function addFriend(sender, receiver) {
   const id = [sender, receiver].sort().toString().replaceAll(",", "");
-  try { return db.prepare("INSERT INTO friends (id, sender, receiver, accepted) VALUES (?, ?, ?, 0)").run(id, sender, receiver).changes > 0; }
-  catch (err) { return false; }
+  try { return db.prepare("INSERT INTO friends (id, sender, receiver, accepted) VALUES (?, ?, ?, 0)").run(id, sender, receiver).changes; }
+  catch (err) { return -1; }
 }
 
 function acceptFriend(receiver, sender) {
-  try { return db.prepare("UPDATE friends SET accepted=1 WHERE receiver=? AND sender=? AND accepted=0").run(receiver, sender).changes > 0; }
-  catch (err) { return false; }
+  try { return db.prepare("UPDATE friends SET accepted=1 WHERE receiver=? AND sender=? AND accepted=0").run(receiver, sender).changes; }
+  catch (err) { return -1; }
 }
 
 function deleteFriends(name) {
-  if (db.prepare("SELECT * FROM friends WHERE (sender=? OR receiver=?)").all(name, name).length === 0) return true;
-  try { return db.prepare("DELETE FROM friends WHERE (sender=? OR receiver=?)").run(name, name).changes > 0; }
-  catch (err) { console.log(err); return false; }
+  try { return db.prepare("DELETE FROM friends WHERE (sender=? OR receiver=?)").run(name, name).changes; }
+  catch (err) { console.log(err); return -1; }
 }
 
 function removeFriend(name, nameFriend) {
-  try { return db.prepare("DELETE FROM friends WHERE (sender=? AND receiver=?) OR (receiver=? AND sender=?)").run(name, nameFriend, nameFriend, name).changes > 0; }
-  catch (err) { console.log(err); return false; }
+  try { return db.prepare("DELETE FROM friends WHERE (sender=? AND receiver=?) OR (receiver=? AND sender=?)").run(name, nameFriend, nameFriend, name).changes; }
+  catch (err) { console.log(err); return -1; }
 }
 
 function getFriends(name) {

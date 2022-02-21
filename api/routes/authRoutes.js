@@ -21,7 +21,7 @@ authRoutes.post("/register", checkAuth(false), (req, res) => {
 
   const salt = genSaltSync(12);
   const hashedPassword = hashSync(password, salt);
-  const isSuccessful = createUser(name, hashedPassword);
+  const isSuccessful = createUser(name, hashedPassword) > 0;
   if (!isSuccessful) return res.sendStatus(400);
 
   return res.sendStatus(200);

@@ -12,31 +12,34 @@ function initMessagesTable() {
 }
 
 function createMessage(sender, receiver, content) {
-  try { return db.prepare("INSERT INTO messages (id, sender, receiver, content, time) VALUES (?, ?, ?, ?, ?)").run(v4(), sender, receiver, content, Date.now()).changes > 0; }
-  catch (err) { return false; }
+  try { return db.prepare("INSERT INTO messages (id, sender, receiver, content, time) VALUES (?, ?, ?, ?, ?)").run(v4(), sender, receiver, content, Date.now()).changes; }
+  catch (err) { return -1; }
 }
 
 function deleteMessage(id) {
-  if (db.prepare("SELECT * FROM messages WHERE id=?").all(id).length === 0) return true;
-  try { return db.prepare("DELETE FROM messages WHERE id=?").run(id).changes > 0; }
-  catch (err) { return false; }
+  try { return db.prepare("DELETE FROM messages WHERE id=?").run(id).changes; }
+  catch (err) { return -1; }
 }
 
-function deleteMessages(sender, receiver) {
-  if (db.prepare("SELECT * FROM messages WHERE sender=? AND receiver=?").all(sender, receiver).length === 0) return true;
-  try { return db.prepare("DELETE FROM messages WHERE sender=? AND receiver=?").run(sender, receiver).changes > 0; }
-  catch (err) { return false; }
+function deleteMessagesBetween(sender, receiver) {
+  try { return db.prepare("DELETE FROM messages WHERE sender=? AND receiver=?").run(sender, receiver).changes; }
+  catch (err) { return -1; }
+}
+
+function deleteMessages(sender) {
+  try { return db.prepare("DELETE FROM messages WHERE sender=? OR receiver=?").run(sender, sender).changes; }
+  catch (err) { return -1; }
 }
 
 function getMessages(sender, receiver) {
   return db.prepare("SELECT * FROM messages WHERE sender=? AND receiver=? ORDER BY time DESC").all(sender, receiver);
 }
 
-
 module.exports = {
   initMessagesTable,
   createMessage,
   deleteMessage,
+  deleteMessagesBetween,
   deleteMessages,
   getMessages
 };

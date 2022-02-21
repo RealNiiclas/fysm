@@ -8,7 +8,7 @@ postRoutes.post("/post", checkAuth(), (req, res) => {
   const { content } = req.body;
   if (!content) return res.sendStatus(400);
 
-  const isSuccessful = createPost(req.session.name, content);
+  const isSuccessful = createPost(req.session.name, content) > 0;
   if (!isSuccessful) return res.sendStatus(400);
 
   return res.sendStatus(200);
