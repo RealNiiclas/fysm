@@ -1,3 +1,5 @@
+const { createMessage } = require("../database/messagesTable");
+
 function handleSocket(io, socket) {
   if (!socket.request.session.name) {
     socket.emit("unauthed");
@@ -7,7 +9,8 @@ function handleSocket(io, socket) {
   socket.on("messageTo", (message, name) => {
     const receiver = Array.from(io.sockets.sockets.values())
       .find((sock) => sock.request.session.name === name && name !== socket.request.session.name);
-    if (!receiver) return socket.emit("message", { failed: true });
+    if (!receiver || !createMessage(socket.request.session.name, receiver.request.session.name, message))
+      return socket.emit("message", { failed: true });
     receiver.emit("message", { message, from: socket.request.session.name });
     socket.emit("message", { message, to: receiver.request.session.name });
   });

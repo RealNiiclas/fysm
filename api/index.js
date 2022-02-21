@@ -14,6 +14,7 @@ const { friendRoutes } = require("./routes/friendRoutes");
 const config = require("../config.json");
 const { initUsersTable } = require("./database/usersTable");
 const { initPostsTable } = require("./database/postsTable");
+const { initMessagesTable } = require("./database/messagesTable");
 const { initFriendsTable } = require("./database/friendsTable");
 
 const nextApp = next({ dev: config.debug });
@@ -40,6 +41,7 @@ nextApp.prepare().then(() => {
   initUsersTable();
   initPostsTable();
   initFriendsTable();
+  initMessagesTable();
 
   expressApp.use(express.json());
   expressApp.use(sessionMiddleware);

@@ -4,7 +4,7 @@ const { db } = require("./database");
 function initPostsTable() {
   db.prepare(`CREATE TABLE IF NOT EXISTS posts (
     id TEXT PRIMARY KEY,
-    author TEXT NOT NULL,
+    author TEXT REFERENCES users (name),
     content TEXT NOT NULL,
     time DATE NOT NULL
   )`).run();
