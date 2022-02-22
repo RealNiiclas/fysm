@@ -3,7 +3,7 @@ const { db } = require("./database");
 
 function initMessagesTable() {
   db.prepare(`CREATE TABLE IF NOT EXISTS messages (
-    id TEXT PRIMARY KEY,
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
     sender TEXT REFERENCES users (name),
     receiver TEXT REFERENCES users (name),
     content TEXT NOT NULL,
@@ -12,7 +12,7 @@ function initMessagesTable() {
 }
 
 function createMessage(sender, receiver, content) {
-  try { return db.prepare("INSERT INTO messages (id, sender, receiver, content, time) VALUES (?, ?, ?, ?, ?)").run(v4(), sender, receiver, content, Date.now()).changes; }
+  try { return db.prepare("INSERT INTO messages (sender, receiver, content, time) VALUES (?, ?, ?, ?)").run(sender, receiver, content, Date.now()).changes; }
   catch (err) { return -1; }
 }
 

@@ -2,16 +2,18 @@ const { db } = require("./database");
 
 function initFriendsTable() {
   db.prepare(`CREATE TABLE IF NOT EXISTS friends (
-    id TEXT PRIMARY KEY,
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
     sender TEXT REFERENCES users (name),
     receiver TEXT REFERENCES users (name),
-    accepted BOOLEAN NOT NULL
+    virtualSender GENERATED AS (MIN(sender, receiver)),
+    virtualReceiver GENERATED AS (MAX(sender, receiver)),
+    accepted BOOLEAN NOT NULL,
+    UNIQUE (virtualSender, virtualReceiver)
   )`).run();
 }
 
 function addFriend(sender, receiver) {
-  const id = [sender, receiver].sort().toString().replaceAll(",", "");
-  try { return db.prepare("INSERT INTO friends (id, sender, receiver, accepted) VALUES (?, ?, ?, 0)").run(id, sender, receiver).changes; }
+  try { return db.prepare("INSERT INTO friends (sender, receiver, accepted) VALUES (?, ?, 0)").run(sender, receiver).changes; }
   catch (err) { return -1; }
 }
 
@@ -26,7 +28,7 @@ function deleteFriends(name) {
 }
 
 function removeFriend(name, nameFriend) {
-  try { return db.prepare("DELETE FROM friends WHERE (sender=? AND receiver=?) OR (receiver=? AND sender=?)").run(name, nameFriend, nameFriend, name).changes; }
+  try { return db.prepare("DELETE FROM friends WHERE (sender=? AND receiver=?) OR (receiver=? AND sender=?)").run(name, nameFriend, name, nameFriend).changes; }
   catch (err) { console.log(err); return -1; }
 }
 

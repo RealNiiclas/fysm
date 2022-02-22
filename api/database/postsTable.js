@@ -3,7 +3,7 @@ const { db } = require("./database");
 
 function initPostsTable() {
   db.prepare(`CREATE TABLE IF NOT EXISTS posts (
-    id TEXT PRIMARY KEY,
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
     author TEXT REFERENCES users (name),
     content TEXT NOT NULL,
     time DATE NOT NULL
@@ -11,7 +11,7 @@ function initPostsTable() {
 }
 
 function createPost(author, content) {
-  try { return db.prepare("INSERT INTO posts (id, author, content, time) VALUES (?, ?, ?, ?)").run(v4(), author, content, Date.now()).changes; }
+  try { return db.prepare("INSERT INTO posts (author, content, time) VALUES (?, ?, ?)").run(author, content, Date.now()).changes; }
   catch (err) { return -1; }
 }
 
