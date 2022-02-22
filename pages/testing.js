@@ -180,3 +180,8 @@ export default function Home() {
     </div>
   );
 }
+
+export const getServerSideProps = () => {
+  if (!config.debug) return { notFound: true };
+  return { props: {} };
+};
