@@ -18,6 +18,9 @@ export default function Home() {
   const [posts, setPosts] = useState([]);
   const [friendName, setFriendName] = useState("");
   const [friends, setFriends] = useState([]);
+  const [username, setUsername] = useState("");
+  const [groupname, setGroupname] = useState("");
+  const [groups, setGroups] = useState([]);
 
   useEffect(() => {
     axios.post(`${serverAddress}/user`)
@@ -138,6 +141,45 @@ export default function Home() {
       .then((data) => setFriends(data.data)).catch((err) => { console.log(err); });
   }
 
+  function createGroup(event) {
+    runOnClick(event);
+    axios.post(`${serverAddress}/createGroup`, { groupname })
+      .then(() => setStatus("Erstellung erfolgreich!"))
+      .catch(() => setStatus("Erstellung fehlgeschlagen!"));
+    setGroupname("");
+  }
+  
+  function fetchGroups(event) {
+    runOnClick(event);
+    axios.post(`${serverAddress}/groups`)
+      .then((data) => setGroups(data.data)).catch((err) => { console.log(err); });
+  }
+
+  function inviteUser(event) {
+    runOnClick(event);
+    axios.post(`${serverAddress}/inviteGroup`, { username, groupname })
+      .then(() => setStatus("Einladung erfolgreich!"))
+      .catch(() => setStatus("Einladung fehlgeschlagen!"));
+    setGroupname("");
+    setUsername("");
+  }
+
+  function leaveGroup(event) {
+    runOnClick(event);
+    axios.post(`${serverAddress}/leaveGroup`, { groupname })
+      .then(() => setStatus("Verlassen erfolgreich!"))
+      .catch(() => setStatus("Verlassen fehlgeschlagen!"));
+    setGroupname("");
+  }
+
+  function acceptGroup(event) {
+    runOnClick(event);
+    axios.post(`${serverAddress}/acceptInvite`, { groupname })
+      .then(() => setStatus("Akzeptieren erfolgreich!"))
+      .catch(() => setStatus("Akzeptieren fehlgeschlagen!"));
+    setGroupname("");
+  }
+
   return (
     <div style={{ margin: ".5rem" }}>
       <Head>
@@ -147,21 +189,21 @@ export default function Home() {
       <input type="text" placeholder="Name" value={name} onChange={(e) => setName(e.target.value)} /><br />
       <input type="password" placeholder="Passwort" value={password} onChange={(e) => setPassword(e.target.value)} /><br /><br />
 
-      <input type="button" value="Anmelden" onClick={(event) => login(event)} /><br />
+      <input type="button" value="Anmelden" onClick={(event) => login(event)} />
       <input type="button" value="Abmelden" onClick={(event) => logout(event)} /><br />
-      <input type="button" value="Registrieren" onClick={(event) => register(event)} /><br />
+      <input type="button" value="Registrieren" onClick={(event) => register(event)} />
       <input type="button" value="Löschen" onClick={(event) => remove(event)} /><br /><br />
 
       <input type="text" placeholder="Nachricht" value={message} onChange={(e) => setMessage(e.target.value)} /><br />
       <input type="text" placeholder="Empfänger" value={target} onChange={(e) => setTarget(e.target.value)} /><br />
       <textarea rows={8} cols={18} readOnly value={messages} /><br /><br />
 
-      <input type="button" value="Verbinden" onClick={(event) => connectChat(event)} /><br />
+      <input type="button" value="Verbinden" onClick={(event) => connectChat(event)} />
       <input type="button" value="Trennen" onClick={(event) => disconnectChat(event)} /><br />
       <input type="button" value="Nachricht senden" onClick={(event) => sendMessageTo(event)} /><br /><br />
 
       <textarea placeholder="Inhalt" rows={8} cols={18} value={content} onChange={(e) => setContent(e.target.value)} /><br /><br />
-      <input type="button" value="Posten" onClick={(event) => post(event)} /><br />
+      <input type="button" value="Posten" onClick={(event) => post(event)} />
       <input type="button" value="Laden" onClick={(event) => getPosts(event)} /><br /><br />
 
       <ul>
@@ -176,6 +218,18 @@ export default function Home() {
 
       <ul>
         {friends.map((friend) => <li key={friend.id}>{friend.name} ({friend.accepted})</li>)}
+      </ul>
+
+      <input type="text" placeholder="Gruppenname" value={groupname} onChange={(e) => setGroupname(e.target.value)} /><br />
+      <input type="text" placeholder="Nutzername" value={username} onChange={(e) => setUsername(e.target.value)} /><br /><br />
+      <input type="button" value="Einladung akzeptieren" onClick={(event) => acceptGroup(event)} /><br />
+      <input type="button" value="Einladung senden" onClick={(event) => inviteUser(event)} /><br />
+      <input type="button" value="Gruppe erstellen" onClick={(event) => createGroup(event)} /><br />
+      <input type="button" value="Gruppe verlassen" onClick={(event) => leaveGroup(event)} /><br />
+      <input type="button" value="Gruppen laden" onClick={(event) => fetchGroups(event)} /><br /><br />
+
+      <ul>
+        {groups.map((group) => <li key={group.groupname}>{group.groupname} ({group.accepted}/{group.admin})</li>)}
       </ul>
     </div>
   );

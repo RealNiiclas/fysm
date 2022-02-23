@@ -24,12 +24,12 @@ function acceptFriend(receiver, sender) {
 
 function deleteFriends(name) {
   try { return db.prepare("DELETE FROM friends WHERE (sender=? OR receiver=?)").run(name, name).changes; }
-  catch (err) { console.log(err); return -1; }
+  catch (err) { return -1; }
 }
 
 function removeFriend(name, nameFriend) {
   try { return db.prepare("DELETE FROM friends WHERE (sender=? AND receiver=?) OR (receiver=? AND sender=?)").run(name, nameFriend, name, nameFriend).changes; }
-  catch (err) { console.log(err); return -1; }
+  catch (err) { return -1; }
 }
 
 function getFriends(name) {

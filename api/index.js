@@ -4,6 +4,7 @@ const socketApp = require("socket.io")(server);
 
 const next = require("next");
 const express = require("express");
+const config = require("../config.json");
 const session = require("express-session");
 const store = require("memorystore")(session);
 const { handleSocket, disconnectSocket } = require("./other/socket");
@@ -11,11 +12,14 @@ const { authRoutes } = require("./routes/authRoutes");
 const { userRoutes } = require("./routes/userRoutes");
 const { postRoutes } = require("./routes/postRoutes");
 const { friendRoutes } = require("./routes/friendRoutes");
-const config = require("../config.json");
+const { groupRoutes } = require("./routes/groupRoutes");
+const { memberRoutes } = require("./routes/memberRoutes");
 const { initUsersTable } = require("./database/usersTable");
 const { initPostsTable } = require("./database/postsTable");
 const { initMessagesTable } = require("./database/messagesTable");
 const { initFriendsTable } = require("./database/friendsTable");
+const { initGroupsTable } = require("./database/groupsTable");
+const { initMembersTable } = require("./database/membersTable");
 
 const nextApp = next({ dev: config.debug });
 const handle = nextApp.getRequestHandler();
@@ -42,6 +46,8 @@ nextApp.prepare().then(() => {
   initPostsTable();
   initFriendsTable();
   initMessagesTable();
+  initGroupsTable();
+  initMembersTable();
 
   expressApp.use(express.json());
   expressApp.use(sessionMiddleware);
@@ -49,6 +55,8 @@ nextApp.prepare().then(() => {
   expressApp.use("/", userRoutes);
   expressApp.use("/", postRoutes);
   expressApp.use("/", friendRoutes);
+  expressApp.use("/", groupRoutes);
+  expressApp.use("/", memberRoutes);
   expressApp.all("*", (req, res) => handle(req, res));
 
   socketApp.use((socket, next) => sessionMiddleware(socket.request, {}, next));
