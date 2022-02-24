@@ -1,5 +1,6 @@
 const { getFriends } = require("../database/friendsTable");
 const { createMessage } = require("../database/messagesTable");
+const { createChatMessage } = require("../database/chatsTable");
 const { getMembers } = require("../database/membersTable");
 
 function handleSocket(io, socket) {
@@ -19,7 +20,8 @@ function handleSocket(io, socket) {
   });
   socket.on("messageToGroup", (message, groupname) => {
     const members = getMembers(groupname);
-    if (!members.find((member) => (member.username === socket.request.session.name && member.accepted === 1)))
+    if (!members.find((member) => (member.username === socket.request.session.name && member.accepted === 1)) ||
+      createChatMessage(socket.request.session.name, groupname, message) < 1)
       return socket.emit("groupMessage", { failed: true });
     Array.from(io.sockets.sockets.values()).forEach((sock) => {
       if (members.find((member) => (member.username === sock.request.session.name && member.accepted === 1)))

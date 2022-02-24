@@ -20,6 +20,7 @@ const { initMessagesTable } = require("./database/messagesTable");
 const { initFriendsTable } = require("./database/friendsTable");
 const { initGroupsTable } = require("./database/groupsTable");
 const { initMembersTable } = require("./database/membersTable");
+const { initChatsTable } = require("./database/chatsTable");
 
 const nextApp = next({ dev: config.debug });
 const handle = nextApp.getRequestHandler();
@@ -48,6 +49,7 @@ nextApp.prepare().then(() => {
   initMessagesTable();
   initGroupsTable();
   initMembersTable();
+  initChatsTable();
 
   expressApp.use(express.json());
   expressApp.use(sessionMiddleware);
