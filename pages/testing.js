@@ -14,6 +14,7 @@ export default function Home() {
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState("");
   const [target, setTarget] = useState("");
+  const [targetGroup, setTargetGroup] = useState("");
   const [content, setContent] = useState("");
   const [posts, setPosts] = useState([]);
   const [friendName, setFriendName] = useState("");
@@ -77,6 +78,10 @@ export default function Home() {
       else if (data.from) setMessages((prev) => `${prev}\nVon ${data.from}: ${data.message}`.trim())
       else setMessages((prev) => `${prev}\nAn ${data.to}: ${data.message}`.trim())
     });
+    socket.on("groupMessage", (data) => {
+      if (data.failed) setMessages((prev) => `${prev}\nSenden fehlgeschlagen!`.trim());
+      else setMessages((prev) => `${prev}\n${data.from}: ${data.message}`.trim());
+    });
     socket.on("disconnect", () => {
       setMessages((prev) => `${prev}\nVerbindung getrennt!`.trim())
       socket = null;
@@ -94,6 +99,13 @@ export default function Home() {
     runOnClick(event);
     if (!socket) return;
     socket.emit("messageTo", message, target);
+    setMessage("");
+  }
+
+  function sendMessageToGroup(event) {
+    runOnClick(event);
+    if (!socket) return;
+    socket.emit("messageToGroup", message, targetGroup);
     setMessage("");
   }
 
@@ -196,11 +208,13 @@ export default function Home() {
 
       <input type="text" placeholder="Nachricht" value={message} onChange={(e) => setMessage(e.target.value)} /><br />
       <input type="text" placeholder="Empfänger" value={target} onChange={(e) => setTarget(e.target.value)} /><br />
+      <input type="text" placeholder="Gruppe" value={targetGroup} onChange={(e) => setTargetGroup(e.target.value)} /><br />
       <textarea rows={8} cols={18} readOnly value={messages} /><br /><br />
 
       <input type="button" value="Verbinden" onClick={(event) => connectChat(event)} />
       <input type="button" value="Trennen" onClick={(event) => disconnectChat(event)} /><br />
-      <input type="button" value="Nachricht senden" onClick={(event) => sendMessageTo(event)} /><br /><br />
+      <input type="button" value="Nachricht senden" onClick={(event) => sendMessageTo(event)} /><br />
+      <input type="button" value="Gruppennachricht senden" onClick={(event) => sendMessageToGroup(event)} /><br /><br />
 
       <textarea placeholder="Inhalt" rows={8} cols={18} value={content} onChange={(e) => setContent(e.target.value)} /><br /><br />
       <input type="button" value="Posten" onClick={(event) => post(event)} />

@@ -1,5 +1,6 @@
 const { getFriends } = require("../database/friendsTable");
 const { createMessage } = require("../database/messagesTable");
+const { getMembers } = require("../database/membersTable");
 
 function handleSocket(io, socket) {
   if (!socket.request.session.name) {
@@ -15,6 +16,15 @@ function handleSocket(io, socket) {
       return socket.emit("message", { failed: true });
     receiver.emit("message", { message, from: socket.request.session.name });
     socket.emit("message", { message, to: receiver.request.session.name });
+  });
+  socket.on("messageToGroup", (message, groupname) => {
+    const members = getMembers(groupname);
+    if (!members.find((member) => (member.username === socket.request.session.name && member.accepted === 1)))
+      return socket.emit("groupMessage", { failed: true });
+    Array.from(io.sockets.sockets.values()).forEach((sock) => {
+      if (members.find((member) => (member.username === sock.request.session.name && member.accepted === 1)))
+        sock.emit("groupMessage", { message, from: socket.request.session.name });
+    });
   });
 }
 
