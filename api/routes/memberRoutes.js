@@ -1,5 +1,5 @@
 const { checkAuth } = require("../other/middleware");
-const { getGroups, removeMember, acceptInvite, getMembers, addMember, deleteMembers } = require("../database/membersTable");
+const { getGroups, removeMember, acceptInvite, getMembers, addMember, makeAdmin, deleteMembers } = require("../database/membersTable");
 const { deleteGroup } = require("../database/groupsTable");
 const express = require("express");
 
@@ -36,10 +36,12 @@ memberRoutes.post("/leaveGroup", checkAuth(), (req, res) => {
   const isSuccessful = removeMember(groupname, req.session.name) > 0;
   if (!isSuccessful) return res.sendStatus(400);
   
-  if (!getMembers(groupname).find((member) => (member.accepted === 1 && member.admin === 1))) {
+  const members = getMembers(groupname).filter((member) => member.accepted === 1);
+  if (members.length === 0) {
     deleteMembers(groupname);
     deleteGroup(groupname);
   }
+  else makeAdmin(groupname, members[0].username);
 
   return res.sendStatus(200);
 });

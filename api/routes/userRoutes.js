@@ -31,10 +31,13 @@ userRoutes.post("/delete", checkAuth(), (req, res) => {
   const userGroups = getGroups(req.session.name);
   userGroups.forEach((group) => {
     if (removeMember(group.groupname, req.session.name) < 1) return res.sendStatus(400);
-    if (!getMembers(group.groupname).find((member) => (member.accepted === 1 && member.admin === 1))) {
+
+    const members = getMembers(group.groupname).filter((member) => member.accepted === 1);
+    if (members.length === 0) {
       deleteMembers(group.groupname);
       deleteGroup(group.groupname);
     }
+    else makeAdmin(group.groupname, members[0].username);
   });
 
   const isSuccessful = deletePosts(req.session.name) > -1 &&

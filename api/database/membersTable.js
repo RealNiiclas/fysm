@@ -9,17 +9,23 @@ function initMembersTable() {
     virtualMax GENERATED AS (MAX(groupname, username)),
     accepted BOOLEAN NOT NULL,
     admin BOOLEAN NOT NULL,
+    time DATE NOT NULL,
     UNIQUE (virtualMin, virtualMax)
   )`).run();
 }
 
 function addMember(groupname, username, accepted, admin) {
-  try { return db.prepare("INSERT INTO members (groupname, username, accepted, admin) VALUES (?, ?, ?, ?)").run(groupname, username, accepted, admin).changes; }
+  try { return db.prepare("INSERT INTO members (groupname, username, accepted, admin, time) VALUES (?, ?, ?, ?, ?)").run(groupname, username, accepted, admin, Date.now()).changes; }
   catch (err) { return -1; }
 }
 
 function acceptInvite(groupname, username) {
   try { return db.prepare("UPDATE members SET accepted=1 WHERE groupname=? AND username=? AND accepted=0").run(groupname, username).changes; }
+  catch (err) { return -1; }
+}
+
+function makeAdmin(groupname, username) {
+  try { return db.prepare("UPDATE members SET admin=1 WHERE groupname=? AND username=? AND admin=0").run(groupname, username).changes; }
   catch (err) { return -1; }
 }
 
@@ -33,7 +39,7 @@ function getGroups(username) {
 }
 
 function getMembers(groupname) {
-  return db.prepare("SELECT username, accepted, admin FROM members WHERE groupname=?").all(groupname);
+  return db.prepare("SELECT username, accepted, admin FROM members WHERE groupname=? ORDER BY time DESC").all(groupname);
 }
 
 function deleteMembers(groupname) {
@@ -44,6 +50,7 @@ function deleteMembers(groupname) {
 module.exports = {
   initMembersTable,
   addMember,
+  makeAdmin,
   acceptInvite,
   removeMember,
   deleteMembers,
