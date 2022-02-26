@@ -7,8 +7,8 @@ function initGroupsTable() {
 }
 
 function createGroup(name) {
-  try { return db.prepare("INSERT INTO groups (name) VALUES (?)").run(name).changes; }
-  catch (err) { return -1; }
+  try { return db.prepare("INSERT INTO groups (name) VALUES (?) RETURNING name").get(name); }
+  catch (err) { return null; }
 }
 
 function deleteGroup(name) {
