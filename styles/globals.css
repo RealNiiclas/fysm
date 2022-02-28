@@ -1,6 +1,17 @@
+*, *:before, *:after { 
+  box-sizing: inherit; 
+}
+
+input { 
+  border-style: none; 
+  outline: none; 
+}
+
 * {
-  box-sizing: border-box;
-  font-family: Helvetica, Arial, sans-serif;
+  font-family: Roboto, Arial, sans-serif;
   padding: 0;
   margin: 0;
+  /*background-color: #515b74;*/
+  background: linear-gradient(to right,#1d1e26, #252736, #2a2d3f, #252736, #1d1e26);
+  color: aliceblue;
 }
