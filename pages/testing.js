@@ -102,6 +102,26 @@ export default function Home() {
     setMessage("");
   }
 
+  function fetchMessages(event) {
+    runOnClick(event);
+    axios.post(`${serverAddress}/messages`, { nameFriend: target })
+      .then((data) => {
+        setMessages([]);
+        data.data.forEach((msg) => setMessages((prev) => `${prev}\n${JSON.stringify(msg)}`.trim()));
+      })
+      .catch(() => setStatus("Laden fehlgeschlagen!"));
+  }
+
+  function fetchGroupMessages(event) {
+    runOnClick(event);
+    axios.post(`${serverAddress}/groupMessages`, { group: targetGroup })
+      .then((data) => {
+        setMessages([]);
+        data.data.forEach((msg) => setMessages((prev) => `${prev}\n${JSON.stringify(msg)}`.trim()));
+      })
+      .catch(() => setStatus("Laden fehlgeschlagen!"));
+  }
+
   function sendMessageToGroup(event) {
     runOnClick(event);
     if (!socket) return;
@@ -125,7 +145,7 @@ export default function Home() {
 
   function addFriend(event) {
     runOnClick(event);
-    axios.post(`${serverAddress}/addFriend`, { friendName })
+    axios.post(`${serverAddress}/addFriend`, { friend: friendName })
       .then(() => setStatus("Freundschaftsanfrage erfolgreich!"))
       .catch(() => setStatus("Freundschaftsanfrage fehlgeschlagen!"));
     setFriendName("");
@@ -133,7 +153,7 @@ export default function Home() {
 
   function removeFriend(event) {
     runOnClick(event);
-    axios.post(`${serverAddress}/removeFriend`, { friendName })
+    axios.post(`${serverAddress}/removeFriend`, { friend: friendName })
       .then(() => setStatus("Entfernung erfolgreich!"))
       .catch(() => setStatus("Entfernung fehlgeschlagen!"));
     setFriendName("");
@@ -141,7 +161,7 @@ export default function Home() {
 
   function acceptFriend(event) {
     runOnClick(event);
-    axios.post(`${serverAddress}/acceptFriend`, { friendName })
+    axios.post(`${serverAddress}/acceptFriend`, { friend: friendName })
       .then(() => setStatus("Akzeptierung erfolgreich!"))
       .catch(() => setStatus("Akzeptierung fehlgeschlagen!"));
     setFriendName("");
@@ -155,7 +175,7 @@ export default function Home() {
 
   function createGroup(event) {
     runOnClick(event);
-    axios.post(`${serverAddress}/createGroup`, { groupname })
+    axios.post(`${serverAddress}/createGroup`, { group: groupname })
       .then(() => setStatus("Erstellung erfolgreich!"))
       .catch(() => setStatus("Erstellung fehlgeschlagen!"));
     setGroupname("");
@@ -169,7 +189,7 @@ export default function Home() {
 
   function inviteUser(event) {
     runOnClick(event);
-    axios.post(`${serverAddress}/inviteGroup`, { username, groupname })
+    axios.post(`${serverAddress}/inviteGroup`, { user: username, group: groupname })
       .then(() => setStatus("Einladung erfolgreich!"))
       .catch(() => setStatus("Einladung fehlgeschlagen!"));
     setGroupname("");
@@ -178,7 +198,7 @@ export default function Home() {
 
   function leaveGroup(event) {
     runOnClick(event);
-    axios.post(`${serverAddress}/leaveGroup`, { groupname })
+    axios.post(`${serverAddress}/leaveGroup`, { group: groupname })
       .then(() => setStatus("Verlassen erfolgreich!"))
       .catch(() => setStatus("Verlassen fehlgeschlagen!"));
     setGroupname("");
@@ -186,7 +206,7 @@ export default function Home() {
 
   function acceptGroup(event) {
     runOnClick(event);
-    axios.post(`${serverAddress}/acceptInvite`, { groupname })
+    axios.post(`${serverAddress}/acceptInvite`, { group: groupname })
       .then(() => setStatus("Akzeptieren erfolgreich!"))
       .catch(() => setStatus("Akzeptieren fehlgeschlagen!"));
     setGroupname("");
@@ -214,6 +234,8 @@ export default function Home() {
       <input type="button" value="Verbinden" onClick={(event) => connectChat(event)} />
       <input type="button" value="Trennen" onClick={(event) => disconnectChat(event)} /><br />
       <input type="button" value="Nachricht senden" onClick={(event) => sendMessageTo(event)} /><br />
+      <input type="button" value="Nachrichten laden" onClick={(event) => fetchMessages(event)} /><br />
+      <input type="button" value="Gruppennachrichten laden" onClick={(event) => fetchGroupMessages(event)} /><br />
       <input type="button" value="Gruppennachricht senden" onClick={(event) => sendMessageToGroup(event)} /><br /><br />
 
       <textarea placeholder="Inhalt" rows={8} cols={18} value={content} onChange={(e) => setContent(e.target.value)} /><br /><br />
@@ -221,7 +243,7 @@ export default function Home() {
       <input type="button" value="Laden" onClick={(event) => getPosts(event)} /><br /><br />
 
       <ul>
-        {posts.map((post) => <li key={post.id}>{post.author}: {post.content}</li>)}
+        {posts.map((post) => <li key={post.id}>{JSON.stringify(post)}</li>)}
       </ul>{posts.length > 0 && <br />}
 
       <input type="text" placeholder="Name" value={friendName} onChange={(e) => setFriendName(e.target.value)} /><br /><br />
@@ -231,8 +253,8 @@ export default function Home() {
       <input type="button" value="Freunde laden" onClick={(event) => fetchFriends(event)} /><br /><br />
 
       <ul>
-        {friends.map((friend) => <li key={friend.id}>{friend.name} ({friend.accepted})</li>)}
-      </ul>
+        {friends.map((friend) => <li key={friend.id}>{JSON.stringify(friend)}</li>)}
+      </ul>{friends.length > 0 && <br />}
 
       <input type="text" placeholder="Gruppenname" value={groupname} onChange={(e) => setGroupname(e.target.value)} /><br />
       <input type="text" placeholder="Nutzername" value={username} onChange={(e) => setUsername(e.target.value)} /><br /><br />
@@ -243,8 +265,8 @@ export default function Home() {
       <input type="button" value="Gruppen laden" onClick={(event) => fetchGroups(event)} /><br /><br />
 
       <ul>
-        {groups.map((group) => <li key={group.groupname}>{group.groupname} ({group.accepted}/{group.admin})</li>)}
-      </ul>
+        {groups.map((group) => <li key={group.id}>{JSON.stringify(group)}</li>)}
+      </ul>{groups.length > 0 && <br />}
     </div>
   );
 }

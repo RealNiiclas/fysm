@@ -1,37 +1,37 @@
-const { checkAuth } = require("../other/middleware");
-const { addFriend, getFriends, acceptFriend, removeFriend } = require("../database/friendsTable");
 const express = require("express");
+const { addFriend, getFriends, acceptFriend, removeFriend } = require("../database/friendTable");
+const { checkAuth } = require("../other/middleware");
 
 const friendRoutes = express.Router();
 
 friendRoutes.post("/addFriend", checkAuth(), (req, res) => {
-  const { friendName } = req.body;
-  if (!friendName) return res.sendStatus(400);
+  const { friend } = req.body;
+  if (!friend) return res.sendStatus(400);
 
-  const isUser = friendName === req.session.name;
-  if (isUser) return res.sendStatus(400);
+  const isSameUser = friend == req.session.name;
+  if (isSameUser) return res.sendStatus(400);
 
-  const isSuccessful = addFriend(req.session.name, friendName) > 0;
+  const isSuccessful = addFriend(req.session.name, friend) > 0;
   if (!isSuccessful) return res.sendStatus(400);
 
   return res.sendStatus(200);
 });
 
 friendRoutes.post("/acceptFriend", checkAuth(), (req, res) => {
-  const { friendName } = req.body;
-  if (!friendName) return res.sendStatus(400);
+  const { friend } = req.body;
+  if (!friend) return res.sendStatus(400);
 
-  const isSuccessful = acceptFriend(req.session.name, friendName) > 0;
+  const isSuccessful = acceptFriend(req.session.name, friend) > 0;
   if (!isSuccessful) return res.sendStatus(400);
 
   return res.sendStatus(200);
 });
 
 friendRoutes.post("/removeFriend", checkAuth(), (req, res) => {
-  const { friendName } = req.body;
-  if (!friendName) return res.sendStatus(400);
+  const { friend } = req.body;
+  if (!friend) return res.sendStatus(400);
 
-  const isSuccessful = removeFriend(req.session.name, friendName) > 0;
+  const isSuccessful = removeFriend(req.session.name, friend) > 0;
   if (!isSuccessful) return res.sendStatus(400);
 
   return res.sendStatus(200);

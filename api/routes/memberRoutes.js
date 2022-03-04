@@ -1,47 +1,46 @@
-const { checkAuth } = require("../other/middleware");
-const { getGroups, removeMember, acceptInvite, getMembers, addMember, makeAdmin, deleteMembers } = require("../database/membersTable");
-const { deleteGroup } = require("../database/groupsTable");
 const express = require("express");
+const { removeMember, acceptInvite, getMembers, addMember, makeAdmin, deleteMembers } = require("../database/memberTable");
+const { deleteGroup, getGroups } = require("../database/groupingTable");
+const { checkAuth } = require("../other/middleware");
 
 const memberRoutes = express.Router();
 
 memberRoutes.post("/inviteGroup", checkAuth(), (req, res) => {
-  const { username, groupname } = req.body;
-  if (!groupname || !username) return res.sendStatus(400);
+  const { user, group } = req.body;
+  if (!group || !user) return res.sendStatus(400);
 
-  const canInvite = !!getGroups(req.session.name)
-    .find((group) => group.groupname === groupname && group.accepted === 1 && group.admin === 1);
+  const canInvite = !!getGroups(req.session.name).find((gr) => gr.id == group && gr.accepted == 1 && gr.admin == 1);
   if (!canInvite) return res.sendStatus(400);
 
-  const isSuccessful = addMember(groupname, username, 0, 0) > 0;
+  const isSuccessful = addMember(user, group, 0, 0) > 0;
   if (!isSuccessful) return res.sendStatus(400);
 
   return res.sendStatus(200);
 });
 
 memberRoutes.post("/acceptInvite", checkAuth(), (req, res) => {
-  const { groupname } = req.body;
-  if (!groupname) return res.sendStatus(400);
+  const { group } = req.body;
+  if (!group) return res.sendStatus(400);
 
-  const isSuccessful = acceptInvite(groupname, req.session.name) > 0;
+  const isSuccessful = acceptInvite(req.session.name, group) > 0;
   if (!isSuccessful) return res.sendStatus(400);
 
   return res.sendStatus(200);
 });
 
 memberRoutes.post("/leaveGroup", checkAuth(), (req, res) => {
-  const { groupname } = req.body;
-  if (!groupname) return res.sendStatus(400);
+  const { group } = req.body;
+  if (!group) return res.sendStatus(400);
 
-  const isSuccessful = removeMember(groupname, req.session.name) > 0;
+  const isSuccessful = removeMember(req.session.name, group) > 0;
   if (!isSuccessful) return res.sendStatus(400);
-  
-  const members = getMembers(groupname).filter((member) => member.accepted === 1);
-  if (members.length === 0) {
-    deleteMembers(groupname);
-    deleteGroup(groupname);
+
+  const members = getMembers(group).filter((member) => member.accepted == 1);
+  if (members.length != 0) makeAdmin(members[0].user, group);
+  else {
+    deleteMembers(group);
+    deleteGroup(group);
   }
-  else makeAdmin(groupname, members[0].username);
 
   return res.sendStatus(200);
 });

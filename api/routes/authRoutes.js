@@ -1,6 +1,6 @@
 const express = require("express");
 const { genSaltSync, hashSync, compareSync } = require("bcrypt");
-const { getUserByName, createUser } = require("../database/usersTable");
+const { getUser, createUser } = require("../database/userTable");
 const { checkAuth } = require("../other/middleware");
 
 const authRoutes = express.Router();
@@ -8,9 +8,6 @@ const authRoutes = express.Router();
 authRoutes.post("/register", checkAuth(false), (req, res) => {
   const { name, password } = req.body;
   if (!name || !password) return res.sendStatus(400);
-
-  const foundUser = getUserByName(name);
-  if (foundUser) return res.sendStatus(400);
 
   const isLengthValid = name.length <= 20 && name.length >= 3
     && password.length <= 64 && password.length >= 8;
@@ -31,13 +28,13 @@ authRoutes.post("/login", checkAuth(false), (req, res) => {
   const { name, password } = req.body;
   if (!name || !password) return res.sendStatus(400);
 
-  const foundUser = getUserByName(name);
+  const foundUser = getUser(name);
   if (!foundUser) return res.sendStatus(400);
 
   const isPasswordCorrect = compareSync(password, foundUser.password);
   if (!isPasswordCorrect) return res.sendStatus(400);
 
-  req.session.name = name;
+  req.session.name = foundUser.name;
   return res.sendStatus(200);
 });
 

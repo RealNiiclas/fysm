@@ -1,6 +1,6 @@
-const { checkAuth } = require("../other/middleware");
-const { createPost, getPosts } = require("../database/postsTable");
 const express = require("express");
+const { createPost, getPosts } = require("../database/postTable");
+const { checkAuth } = require("../other/middleware");
 
 const postRoutes = express.Router();
 

@@ -1,6 +1,6 @@
 const fs = require("fs");
-const config = require("../../config.json");
 const database = require("better-sqlite3");
+const config = require("../../config.json");
 
 const outputPath = `${__dirname}/../../${config.databaseOutputPath}`;
 const outputDirectory = outputPath.substring(0, outputPath.lastIndexOf("/"));

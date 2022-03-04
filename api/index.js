@@ -14,13 +14,13 @@ const { postRoutes } = require("./routes/postRoutes");
 const { friendRoutes } = require("./routes/friendRoutes");
 const { groupRoutes } = require("./routes/groupRoutes");
 const { memberRoutes } = require("./routes/memberRoutes");
-const { initUsersTable } = require("./database/usersTable");
-const { initPostsTable } = require("./database/postsTable");
-const { initMessagesTable } = require("./database/messagesTable");
-const { initFriendsTable } = require("./database/friendsTable");
-const { initGroupsTable } = require("./database/groupsTable");
-const { initMembersTable } = require("./database/membersTable");
-const { initChatsTable } = require("./database/chatsTable");
+const { initUserTable } = require("./database/userTable");
+const { initFriendTable } = require("./database/friendTable");
+const { initGroupingTable } = require("./database/groupingTable");
+const { initMemberTable } = require("./database/memberTable");
+const { initPostTable } = require("./database/postTable");
+const { initGmTable } = require("./database/gmTable");
+const { initPmTable } = require("./database/pmTable");
 
 const nextApp = next({ dev: config.debug });
 const handle = nextApp.getRequestHandler();
@@ -43,13 +43,13 @@ const sessionMiddleware = session({
 });
 
 nextApp.prepare().then(() => {
-  initUsersTable();
-  initPostsTable();
-  initFriendsTable();
-  initMessagesTable();
-  initGroupsTable();
-  initMembersTable();
-  initChatsTable();
+  initUserTable();
+  initPostTable();
+  initFriendTable();
+  initPmTable();
+  initGroupingTable();
+  initMemberTable();
+  initGmTable();
 
   expressApp.use(express.json());
   expressApp.use(sessionMiddleware);
