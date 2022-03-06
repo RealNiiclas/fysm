@@ -18,6 +18,7 @@ const { initUserTable } = require("./database/userTable");
 const { initFriendTable } = require("./database/friendTable");
 const { initGroupingTable } = require("./database/groupingTable");
 const { initMemberTable } = require("./database/memberTable");
+const { initLoginTable } = require("./database/loginTable");
 const { initPostTable } = require("./database/postTable");
 const { initGmTable } = require("./database/gmTable");
 const { initPmTable } = require("./database/pmTable");
@@ -50,6 +51,7 @@ nextApp.prepare().then(() => {
   initGroupingTable();
   initMemberTable();
   initGmTable();
+  initLoginTable();
 
   expressApp.use(express.json());
   expressApp.use(sessionMiddleware);

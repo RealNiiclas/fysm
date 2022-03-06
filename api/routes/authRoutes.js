@@ -2,6 +2,7 @@ const express = require("express");
 const { genSaltSync, hashSync, compareSync } = require("bcrypt");
 const { getUser, createUser } = require("../database/userTable");
 const { checkAuth } = require("../other/middleware");
+const { addFailedLogin, canLogin, removeOldLogins, removeLogins } = require("../database/loginTable");
 
 const authRoutes = express.Router();
 
@@ -19,7 +20,7 @@ authRoutes.post("/register", checkAuth(false), (req, res) => {
   const salt = genSaltSync(12);
   const hashedPassword = hashSync(password, salt);
   const isSuccessful = createUser(name, hashedPassword) > 0;
-  if (!isSuccessful) return res.sendStatus(400);
+  if (!isSuccessful) return res.sendStatus(485);
 
   return res.sendStatus(200);
 });
@@ -29,11 +30,19 @@ authRoutes.post("/login", checkAuth(false), (req, res) => {
   if (!name || !password) return res.sendStatus(400);
 
   const foundUser = getUser(name);
-  if (!foundUser) return res.sendStatus(400);
+  if (!foundUser) return res.sendStatus(465);
 
   const isPasswordCorrect = compareSync(password, foundUser.password);
-  if (!isPasswordCorrect) return res.sendStatus(400);
+  if (!isPasswordCorrect) {
+    removeOldLogins();
+    addFailedLogin(foundUser.name);
+    return res.sendStatus(400);
+  }
 
+  const isAllowed = canLogin(foundUser.name);
+  if (!isAllowed) return res.sendStatus(475);
+
+  removeLogins(foundUser.name);
   req.session.name = foundUser.name;
   return res.sendStatus(200);
 });
