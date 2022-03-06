@@ -11,7 +11,7 @@ function handleSocket(io, socket) {
   }
   socket.on("messageTo", (message, user) => {
     const receiver = Array.from(io.sockets.sockets.values()).find((sock) => sock.request.session.name == user && user !== socket.request.session.name);
-    if (!getFriends(socket.request.session.name).find((friend) => friend.name == user && friend.accepted) ||
+    if (!message || !getFriends(socket.request.session.name).find((friend) => friend.name == user && friend.accepted) ||
       createMessage(socket.request.session.name, user, message) < 1)
       socket.emit("message", { failed: true });
     else {
@@ -21,8 +21,9 @@ function handleSocket(io, socket) {
   });
   socket.on("messageToGroup", (message, grouping) => {
     const members = getMembers(grouping);
-    if (!members.find((member) => (member.user == socket.request.session.name && member.accepted == 1)) ||
-      createGroupMessage(socket.request.session.name, grouping, message) < 1) return socket.emit("groupMessage", { failed: true });
+    if (!message || !members.find((member) => (member.user == socket.request.session.name && member.accepted == 1)) ||
+      createGroupMessage(socket.request.session.name, grouping, message) < 1)
+      return socket.emit("groupMessage", { failed: true });
     Array.from(io.sockets.sockets.values()).forEach((sock) => {
       if (members.find((member) => (member.user == sock.request.session.name && member.accepted == 1)))
         sock.emit("groupMessage", { message, from: socket.request.session.name });
@@ -32,8 +33,7 @@ function handleSocket(io, socket) {
 
 function disconnectSocket(io, id) {
   io.sockets.sockets.forEach(socket => {
-    console.log(socket.request.session.id, socket.request.session.name, id);
-    if (socket.request.session.name !== id) return;
+    if (socket.request.session.id !== id) return;
     socket.emit("unauthed");
     socket.disconnect();
   });
