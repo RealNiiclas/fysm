@@ -1,8 +1,8 @@
 const express = require("express");
 const { genSaltSync, hashSync, compareSync } = require("bcrypt");
+const { addFailedLogin, canLogin, removeOldLogins, removeLogins } = require("../database/loginTable");
 const { getUser, createUser } = require("../database/userTable");
 const { checkAuth } = require("../other/middleware");
-const { addFailedLogin, canLogin, removeOldLogins, removeLogins } = require("../database/loginTable");
 
 const authRoutes = express.Router();
 

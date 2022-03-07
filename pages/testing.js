@@ -22,6 +22,8 @@ export default function Home() {
   const [username, setUsername] = useState("");
   const [groupname, setGroupname] = useState("");
   const [groups, setGroups] = useState([]);
+  const [user, setUser] = useState("");
+  const [users, setUsers] = useState([]);
 
   useEffect(() => {
     axios.post(`${serverAddress}/user`)
@@ -108,8 +110,7 @@ export default function Home() {
       .then((data) => {
         setMessages([]);
         data.data.forEach((msg) => setMessages((prev) => `${prev}\n${JSON.stringify(msg)}`.trim()));
-      })
-      .catch(() => setStatus("Laden fehlgeschlagen!"));
+      }).catch(() => setMessages([]));
   }
 
   function fetchGroupMessages(event) {
@@ -118,8 +119,7 @@ export default function Home() {
       .then((data) => {
         setMessages([]);
         data.data.forEach((msg) => setMessages((prev) => `${prev}\n${JSON.stringify(msg)}`.trim()));
-      })
-      .catch(() => setStatus("Laden fehlgeschlagen!"));
+      }).catch(() => setMessages([]));
   }
 
   function sendMessageToGroup(event) {
@@ -140,7 +140,8 @@ export default function Home() {
   function getPosts(event) {
     runOnClick(event);
     axios.post(`${serverAddress}/posts`)
-      .then((data) => setPosts(data.data)).catch(() => { });
+      .then((data) => setPosts(data.data))
+      .catch(() => setPosts([]));
   }
 
   function addFriend(event) {
@@ -170,7 +171,8 @@ export default function Home() {
   function fetchFriends(event) {
     runOnClick(event);
     axios.post(`${serverAddress}/friends`)
-      .then((data) => setFriends(data.data)).catch((err) => { console.log(err); });
+      .then((data) => setFriends(data.data))
+      .catch(() => setFriends([]));
   }
 
   function createGroup(event) {
@@ -184,7 +186,8 @@ export default function Home() {
   function fetchGroups(event) {
     runOnClick(event);
     axios.post(`${serverAddress}/groups`)
-      .then((data) => setGroups(data.data)).catch((err) => { console.log(err); });
+      .then((data) => setGroups(data.data))
+      .catch(() => setGroups([]));
   }
 
   function inviteUser(event) {
@@ -210,6 +213,14 @@ export default function Home() {
       .then(() => setStatus("Akzeptieren erfolgreich!"))
       .catch(() => setStatus("Akzeptieren fehlgeschlagen!"));
     setGroupname("");
+  }
+
+  function fetchUsers(event) {
+    runOnClick(event);
+    axios.post(`${serverAddress}/search`, { user })
+      .then((data) => setUsers(data.data))
+      .catch(() => setUsers([]));
+    setUser("");
   }
 
   return (
@@ -245,6 +256,13 @@ export default function Home() {
       <ul>
         {posts.map((post) => <li key={post.id}>{JSON.stringify(post)}</li>)}
       </ul>{posts.length > 0 && <br />}
+
+      <input type="text" placeholder="Name" value={user} onChange={(e) => setUser(e.target.value)} /><br /><br />
+      <input type="button" value="Nutzer suchen" onClick={(event) => fetchUsers(event)} /><br /><br />
+      
+      <ul>
+        {users.map((usr) => <li key={usr.name}>{JSON.stringify(usr)}</li>)}
+      </ul>{users.length > 0 && <br />}
 
       <input type="text" placeholder="Name" value={friendName} onChange={(e) => setFriendName(e.target.value)} /><br /><br />
       <input type="button" value="Freund hinzufügen" onClick={(event) => addFriend(event)} /><br />

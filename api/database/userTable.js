@@ -17,6 +17,10 @@ function deleteUser(name) {
   catch (err) { return -1; }
 }
 
+function searchUser(name) {
+  return db.prepare(`SELECT name FROM user WHERE name LIKE ? LIMIT 15`).all(`%${name}%`);
+}
+
 function getUser(name) {
   return db.prepare("SELECT * FROM user WHERE name=?").get(name);
 }
@@ -25,5 +29,6 @@ module.exports = {
   initUserTable,
   createUser,
   deleteUser,
+  searchUser,
   getUser
 };

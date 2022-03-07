@@ -1,8 +1,8 @@
 const express = require("express");
 const { compareSync } = require("bcrypt");
 const { getMembers, deleteMembers, makeAdmin } = require("../database/memberTable");
+const { deleteUser, getUser, searchUser } = require("../database/userTable");
 const { deleteGroup, getGroups } = require("../database/groupingTable");
-const { deleteUser, getUser } = require("../database/userTable");
 const { getMessages } = require("../database/pmTable");
 const { checkAuth } = require("../other/middleware");
 
@@ -37,6 +37,14 @@ userRoutes.post("/delete", checkAuth(), (req, res) => {
 
   req.session.destroy();
   return res.sendStatus(200);
+});
+
+userRoutes.post("/search", checkAuth(), (req, res) => {
+  const { user } = req.body;
+  if (!user) return res.sendStatus(400);
+
+  const users = searchUser(user);
+  return res.json(users);
 });
 
 userRoutes.post("/messages", checkAuth(), (req, res) => {
