@@ -29,8 +29,8 @@ function removeFriend(name, nameFriend) {
 }
 
 function getFriends(name) {
-  return db.prepare(`SELECT name, receiver, accepted, time FROM (SELECT CASE WHEN sender=? THEN receiver ELSE sender END friendId, name,
-    CASE WHEN sender=? THEN 0 ELSE 1 END receiver, accepted, time FROM friend, user WHERE friendId=name)`).all(name, name);
+  return db.prepare(`SELECT friendId AS name, receiver, accepted, time FROM (SELECT CASE WHEN sender=? THEN receiver ELSE sender END friendId, 
+    CASE WHEN receiver=? THEN receiver ELSE sender END senderId, CASE WHEN sender=? THEN 0 ELSE 1 END receiver, accepted, time FROM friend WHERE senderId=?)`).all(name, name, name, name);
 }
 
 module.exports = {
