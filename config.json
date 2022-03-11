@@ -4,6 +4,12 @@
   "serverIncludePort": true,
   "serverAddress": "http://localhost",
   "sessionCookieName": "sid",
+  "sessionCookieSecure": false,
+  "sessionCookieTime": 86400000,
   "sessionSecret": "Cfg4MBM7Uv6!p!QUHACpahP5de%m*$Zs",
-  "databaseOutputPath": "/output/database.db"
+  "databaseOutputPath": "/output/database.db",
+  "userPasswordMax": 64,
+  "userPasswordMin": 8,
+  "userNameMax": 20,
+  "userNameMin": 3
 }

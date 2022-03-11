@@ -1,4 +1,5 @@
 const express = require("express");
+const config = require("../../config.json");
 const { genSaltSync, hashSync, compareSync } = require("bcrypt");
 const { addFailedLogin, canLogin, removeOldLogins, removeLogins } = require("../database/loginTable");
 const { getUser, createUser } = require("../database/userTable");
@@ -10,8 +11,8 @@ authRoutes.post("/register", checkAuth(false), (req, res) => {
   const { name, password } = req.body;
   if (!name || !password) return res.sendStatus(400);
 
-  const isLengthValid = name.length <= 20 && name.length >= 3
-    && password.length <= 64 && password.length >= 8;
+  const isLengthValid = name.length <= config.userNameMax && name.length >= config.userNameMin
+    && password.length <= config.userPasswordMax && password.length >= config.userPasswordMin;
   if (!isLengthValid) return res.sendStatus(400);
 
   const isNameValid = name.match("^[a-zA-Z0-9]+$");
