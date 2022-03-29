@@ -1,28 +1,28 @@
 ## FYSM
-FYSM is an open source application that allows you to run your own social media application. The application focuses on detecting fake news and hate messages and preventing the spread of such information. For this purpose, all messages sent in the application are checked by algorithms for their content and, if necessary, blocked when they are sent and saved. However, there are also classic functionalities such as writing messages in groups, sending direct messages to friends or creating posts.
+FYSM is an open source application that allows you to run your own social media application. The application focuses on detecting fake news, hate messages and preventing the spread of such information. For this purpose, all messages sent in the application are checked by algorithms for their content and, if necessary, blocked when they are sent and saved. However, there are also classic functionalities such as writing messages in groups, sending direct messages to friends or creating posts.
 
 ## Download & Install
 ### Download
-In order to download and install this application, you must first install [Git](https://git-scm.com) and [Node.js](https://nodejs.org) (which includes [npm](https://www.npmjs.com)).\
+In order to download and install this application, you must first install [Git](https://git-scm.com) and [Node.js](https://nodejs.org) (which includes [npm](https://www.npmjs.com)).
 If both are installed the project can be downloaded using the following command:
 
     git clone https://github.com/RealNiiclas/fysm.git
     
 ### Install
-Once the entire project has been downloaded, all required dependencies can be installed using the Node Package Manager (npm for short).\
+Once the entire project has been downloaded, all required dependencies can be installed using the Node Package Manager (npm for short).
 For this, you can use the following command:
 
     npm install
 
 ## Start & Run
 ### Debug mode
-Now, to run this application in production mode, you need to make sure that the debug option in the configuration file is set to true.\
+Now, to run this application in production mode, you need to make sure that the debug option in the configuration file is set to true.
 If this is the case, the application can be started with the following command:
 
     npm start
 
 ### Production mode
-If, on the other hand, you want to start the application in production mode, you must make sure that the debug option in the configuration file is set to false.\
+If, on the other hand, you want to start the application in production mode, you must make sure that the debug option in the configuration file is set to false.
 If this is the case, the application can be started with the following commands:
 
     npm build
