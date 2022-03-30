@@ -8,6 +8,8 @@
   "sessionCookieTime": 86400000,
   "sessionSecret": "Cfg4MBM7Uv6!p!QUHACpahP5de%m*$Zs",
   "databaseOutputPath": "/output/database.db",
+  "filterSwearWords": false,
+  "filterFakeNews": false,
   "userPasswordMax": 64,
   "userPasswordMin": 8,
   "userNameMax": 20,

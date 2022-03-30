@@ -25,7 +25,7 @@ If this is the case, the application can be started with the following command:
 If, on the other hand, you want to start the application in production mode, you must make sure that the debug option in the configuration file is set to false.
 If this is the case, the application can be started with the following commands:
 
-    npm build
+    npm run build
     npm start
 
 ## Configuration
