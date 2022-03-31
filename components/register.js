@@ -34,7 +34,7 @@ export default function signinForm() {
   return (
     <div className={style.registerForm}>
       <form className={style.registerForm__form}>
-        <h1 id={style.registerForm__registerLabel}>Registrieren</h1>
+        <h1 id={style.registerForm__registerLabel}>Registrierung</h1>
         <br/>
         <div className={style.registerForm__username}>
           <div className={style.registerForm__textInput}>
@@ -62,7 +62,9 @@ export default function signinForm() {
             </div>
           </div>  
         </div>
-        <input id={style.registerForm__submitButtonInput} type="submit"value="Anmelden" onClick={(event) => register(event)}/>
+        <br />
+        <input id={style.registerForm__submitButtonInput} type="submit" value="Registrieren" onClick={(event) => register(event)}/><br /><br />
+        <input id={style.registerForm__submitButtonInput} type="button" value="Zur Anmeldung" onClick={(event) => location.replace('/login')}/>
       </form>
     </div>  
   );

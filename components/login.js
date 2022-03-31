@@ -34,7 +34,7 @@ export default function loginForm() {
   return (
     <div className={style.loginForm}>
       <form className={style.loginForm__form}>
-        <h1 id={style.loginForm__loginLabel}>Anmelden</h1>
+        <h1 id={style.loginForm__loginLabel}>Anmeldung</h1>
         <div className={style.loginForm__username}>
           <div className={style.loginForm__textInput}>
             <input className={style.loginForm__textInputField} type="text" placeholder="Name" value={name} onChange={(event) => setName(event.target.value)}/>
@@ -51,7 +51,9 @@ export default function loginForm() {
             </div>
           </div>  
         </div>
-        <input id={style.loginForm__submitButtonInput} type="submit"value="Anmelden" onClick={(event) => login(event)}/>
+        <br />
+        <input id={style.loginForm__submitButtonInput} type="submit" value="Anmelden" onClick={(event) => login(event)}/><br /><br />
+        <input id={style.loginForm__submitButtonInput} type="button" value="Zur Registrierung" onClick={(event) => location.replace('/register')}/>
       </form>
     </div>  
   );
