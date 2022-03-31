@@ -1,0 +1,75 @@
+
+.privateChatPanel {
+  border: 2px solid #1d1e26;
+  height: 45rem;
+  width: 22.5rem;
+  display: grid;
+  grid-template-rows: 8% 87% 5%;
+  grid-template-areas: 
+    "header"
+    "chat"
+    "bottom";
+}
+
+/*-------------------------------*/
+/*-------------HEADER------------*/
+/*-------------------------------*/
+
+.privateChatPanel__header {
+  background: fixed #252736;
+  grid-area: "header";
+  display: grid;
+  grid-template-columns: 60% 20% 20%;
+  grid-template-areas: "name settings close";
+}
+
+.privateChatPanel__header label {
+  grid-area: "name";
+  background: transparent;
+  margin: auto auto auto auto;
+}
+
+#privateChatPanel__settingsButton {
+  grid-area: "settings";
+  background: transparent;
+  margin: auto auto auto auto;
+}
+
+#privateChatPanel__closeButton {
+  grid-area: "close";
+  background: transparent;
+  margin: auto auto auto auto;
+}
+
+/*-------------------------------*/
+/*----------CHATPROTOCOL---------*/
+/*-------------------------------*/
+
+.privateChatPanel__chat {
+  background: fixed #2a2d3f;
+  grid-area: "chat";
+}
+
+/*-------------------------------*/
+/*-------------BOTTOM------------*/
+/*-------------------------------*/
+
+.privateChatPanel__bottom {
+  background: fixed #252736;
+  grid-area: "bottom";
+  display: grid;
+  grid-template-columns: 50% 50%;
+  grid-template-areas: "message send";
+}
+
+#privateChatPanel__messageInput  {
+  grid-area: "message";
+  background: transparent;
+  margin: auto auto auto auto;
+}
+
+#privateChatPanel__sendButton {
+  grid-area: "send";
+  background: transparent;
+  margin: auto auto auto auto;
+}

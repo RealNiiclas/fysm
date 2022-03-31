@@ -1,0 +1,97 @@
+
+.groups__list {
+  background: fixed #1d1e26;
+  height: 100%;
+}
+
+.groups__pendingGroups {
+  background: transparent;
+}
+
+.groups__label {
+  background: transparent;
+  width: 100%;
+  display: inline-flex;
+}
+
+.groups__label label {
+  margin-left: 10px;
+  font-size: larger;
+  background: transparent;
+  vertical-align: middle;
+  color: rgb(174, 179, 185);
+}
+
+.groups__label input {
+  font-size: larger;
+  background: transparent;
+  margin-left: auto;
+  margin-right: 10px;
+  color: rgb(174, 179, 185);
+}
+
+.groups__addGroup {
+  background: #101014;
+  position: absolute;
+  width: 100%;
+  z-index: 10;
+  font-size: larger;
+  line-height: 2rem;
+}
+
+.groups__addGroup form {
+  background: transparent;
+}
+
+#groups__addGroupUserName {
+  background: transparent;
+  margin-left: 10px;
+}
+
+#groups__addGroupButton {
+  background: transparent;
+  margin-left: 10px;
+}
+
+#groups__addGroupButton:hover {
+  background-color: #282935;
+}
+
+#groups__addGroup:hover{
+  color: white;
+}
+
+.groups__list ul {
+  list-style-type: none;
+  background: transparent;
+}
+
+.groups__list ul li {
+  background: transparent;
+}
+
+.group__container {
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  background: transparent;
+  position: relative;
+  align-items: center;
+}
+
+.group__button {
+  display: block;
+  width: 100%;
+  background: transparent;
+  font-size: 1.4rem;
+  line-height: 2rem;
+  font-weight: 500;
+}
+
+.groups__unaccepted {
+  color:rgb(181, 188, 194);
+}
+
+.group__button:hover{
+  background-color: #282935;
+}

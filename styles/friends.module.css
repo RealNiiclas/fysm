@@ -1,0 +1,92 @@
+
+.friends__list {
+  background: fixed #1d1e26;
+  height: 100%;
+}
+
+.friends__pendingFriends {
+  background: transparent;
+}
+
+.friends__label {
+  background: transparent;
+  width: 100%;
+  display: inline-flex;
+}
+
+.friends__label label {
+  margin-left: 10px;
+  font-size: larger;
+  background: transparent;
+  vertical-align: middle;
+  color: rgb(174, 179, 185);
+}
+
+.friends__label input {
+  font-size: larger;
+  background: transparent;
+  margin-left: auto;
+  margin-right: 10px;
+  color: rgb(174, 179, 185);
+}
+
+.friends__addFriend {
+  background: #101014;
+  position: absolute;
+  width: 100%;
+  z-index: 10;
+  font-size: larger;
+  line-height: 2rem;
+}
+
+.friends__addFriend form {
+  background: transparent;
+}
+
+#friends__addFriendUserName {
+  background: transparent;
+  margin-left: 10px;
+}
+
+#friends__addFriendButton {
+  background: transparent;
+  margin-left: 10px
+}
+#friends__addFriend:hover{
+  color: white;
+}
+
+.friends__list ul {
+  list-style-type: none;
+  background: transparent;
+}
+
+.friends__list ul li {
+  background: transparent;
+}
+
+.friend__container {
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  background: transparent;
+  position: relative;
+  align-items: center;
+}
+
+.friend__button {
+  display: block;
+  width: 100%;
+  background: transparent;
+  font-size: 1.4rem;
+  line-height: 2rem;
+  font-weight: 500;
+}
+
+.friends__unaccepted {
+  color:rgb(181, 188, 194);
+}
+
+.friend__button:hover{
+  background-color: #282935;
+}

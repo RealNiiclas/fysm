@@ -1,0 +1,32 @@
+.navigationBar {
+  height: 3rem;
+  background: fixed #1d1e26;
+  position: relative;
+  display: grid;
+  grid-template-columns: 90% 10%;
+  grid-template-areas: "nameDisplay logOutButton";
+}
+
+.navigationBar__logOut {
+  grid-area: logOutButton;
+  background: transparent;
+}
+
+#navigationBar__logOutButton {
+  background: transparent;
+  height: 100%;
+  width: 100%;
+}
+
+#navigationBar__logOutButton:hover {
+  background-color: #282935;;
+}
+
+.navigationBar__nameDisplay {
+  grid-area: nameDisplay;
+  background: transparent;
+}
+
+#navigationBar__nameDisplayLabel {
+  background: transparent;
+}
