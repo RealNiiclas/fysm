@@ -21,6 +21,8 @@ If this is the case, the application can be started with the following command:
 
     npm start
 
+> (While this project is still under development, the test page can be used to test all the features available in this project. However, this page is only available when debug mode is enabled. You can find it by default at [http://localhost:3000/testing](http://localhost:3000/testing))
+
 ### Production mode
 If, on the other hand, you want to start the application in production mode, you must make sure that the debug option in the configuration file is set to false.
 If this is the case, the application can be started with the following commands:
