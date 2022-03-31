@@ -10,8 +10,8 @@ postRoutes.post("/post", checkAuth(), async (req, res) => {
   const { content } = req.body;
   if (!content) return res.sendStatus(400);
 
-  const isInvalid = ((config.filterSwearWords && containsSwearWords(message)) ||
-    (config.filterFakeNews && (await containsFakeNews(message))));
+  const isInvalid = ((config.filterSwearWords && containsSwearWords(content)) ||
+    (config.filterFakeNews && (await containsFakeNews(content))));
   if (isInvalid) return res.sendStatus(460);
 
   const isSuccessful = createPost(req.session.name, content) > 0;

@@ -22,11 +22,10 @@ async function containsFakeNews(text) {
         if (index) indices.push(index);
     });
 
-    while (indices.length < 1000) indices.push(0);
+    while (indices.length < 1000) indices.splice(0, 0, 0);
     while (indices.length > 1000) indices.pop();
 
     const result = (await model).predict(tf.tensor(indices, [1, 1000])).dataSync()[0];
-    console.log(result);
     return result < 0.5;
 }
 

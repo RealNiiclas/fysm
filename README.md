@@ -42,6 +42,8 @@ sessionCookieSecure | Can be used to send cookies only when HTTPS is used | bool
 sessionCookieTime | Time in milliseconds that indicates how long a session is valid | number |86400000
 sessionSecret | Secret used to create the session identifiers | string | Cfg4MBM7Uv6!p!QUHACpahP5de%m*$Zs
 databaseOutputPath | Path under which the database will be loaded and created if it does not exist | string | /output/database.db
+filterSwearWords | Used to enable and disable filtering of swear words | boolean | false
+filterFakeNews | Used to enable and disable filtering of fake news | boolean | false
 userPasswordMax | Maximum length for user passwords | number | 64
 userPasswordMin | Minimum length for user passwords | number | 8
 userNameMax | Maximum length for user names | number | 20
