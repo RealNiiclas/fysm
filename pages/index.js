@@ -1,7 +1,7 @@
 import FriendList from "../components/mainPage/friendContainer/friendList.js";
 import GroupList from "../components/mainPage/groupContainer/groupList.js";
 import NavigationBar from "../components/mainPage/navigationBar.js";
-import PanelContainerList from "../components/mainPage/panelContainer/panelContainerlist.js";
+import PanelContainerList from "../components/mainPage/panelContainer/panelContainerList.js";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import config from "../config.json";
