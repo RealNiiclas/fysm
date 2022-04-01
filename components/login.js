@@ -9,13 +9,13 @@
 //TODO: Roter GRadient bei faslchen eingaben
 
 import axios from "axios";
-import config from "../config.json";
 import { useState } from "react";
+import config from "../config.json";
 import style from "../styles/login.module.css";
 
 let serverAddress = `${config.serverAddress}${config.serverIncludePort ? ":" + config.serverPort : ""}`;
 
-export default function loginForm() {
+export default function LoginForm() {
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
 

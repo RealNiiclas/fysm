@@ -8,7 +8,7 @@ import style from "../styles/register.module.css";
 
 let serverAddress = `${config.serverAddress}${config.serverIncludePort ? ":" + config.serverPort : ""}`;
 
-export default function signinForm() {
+export default function RegisterForm() {
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
   const [repeatPassword, setRepeatPassword] = useState("");

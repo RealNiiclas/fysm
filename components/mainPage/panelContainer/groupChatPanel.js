@@ -1,6 +1,6 @@
-import style from "../../../styles/chatPanel.module.css";
 import axios from "axios";
-import { useState, useEffect } from "react";
+import style from "../../../styles/chatPanel.module.css";
+import { useState, useEffect, useCallback } from "react";
 import config from "../../../config.json";
 import MessageBox from "./messageBox";
 import { format } from 'date-fns';
@@ -10,29 +10,26 @@ let serverAddress = `${config.serverAddress}${config.serverIncludePort ? ":" + c
 let socket = null;
 
 export default function GroupChatPanel({group, deleteGroupChatPanel, sendMessageToGroup, leaveGroup, inviteUser}) {
-
   const [groupMessages, setGroupMessages] = useState([]);
   const [groupMessage, setGroupMessage] = useState("");
   const [dropDownMenuVisible, toggleDropDownMenuVisibility] = useState(false);
   const [inputPanelVisibility, setInputPanelVisibility] = useState(false);
-  const [userName, setUserName] = useState("");
+
+  const fetchGroupMessages = useCallback(() => {
+    axios.post(`${serverAddress}/groupMessages`, { group: group.id })
+      .then((data) => setGroupMessages(data.data))
+      .catch(() => console.log("Laden der Gruppennachrichten fehlgeschlagen"));
+  }, [group]);
 
   useEffect(() => {
     fetchGroupMessages();
-
     socket = io(`${serverAddress}`, { reconnection: false });
     socket.on("message", (data) => {
       if (data.failed) setPrivateMessages((prev) => `${prev}\nSenden fehlgeschlagen!`.trim());
       else if (data.from) setPrivateMessages((prev) => `${prev}\nVon ${data.from}: ${data.message}`.trim())
       else setPrivateMessages((prev) => `${prev}\nAn ${data.to}: ${data.message}`.trim())
     });
-  }, []);
-
-  function fetchGroupMessages(event) {
-    axios.post(`${serverAddress}/groupMessages`, { group: group.id })
-      .then((data) => setGroupMessages(data.data))
-      .catch(() => console.log("Laden der Gruppennachrichten fehlgeschlagen"));
-  }
+  }, [group, fetchGroupMessages]);
 
   function sendMessage() {
     sendMessageToGroup(group.id, groupMessage); 

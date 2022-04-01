@@ -1,6 +1,6 @@
-import style from "../../../styles/chatPanel.module.css";
 import axios from "axios";
-import { useState, useEffect } from "react";
+import style from "../../../styles/chatPanel.module.css";
+import { useState, useEffect, useCallback } from "react";
 import config from "../../../config.json";
 import MessageBox from "./messageBox";
 import { format } from 'date-fns';
@@ -9,28 +9,26 @@ import io from "socket.io-client";
 let serverAddress = `${config.serverAddress}${config.serverIncludePort ? ":" + config.serverPort : ""}`;
 let socket = null;
 
-export default function PrivateChatPanel({friend, socket, deletePrivateChatPanel, sendPrivateMessageTo, removeFriend}) {
+export default function PrivateChatPanel({friend, deletePrivateChatPanel, sendPrivateMessageTo, removeFriend}) {
+  const [privateMessages, setPrivateMessages] = useState([]);
+  const [privateMessage, setPrivateMessage] = useState("");
+  const [dropDownMenuVisible, toggleDropDownMenuVisibility] = useState(false);
 
-const [privateMessages, setPrivateMessages] = useState([]);
-const [privateMessage, setPrivateMessage] = useState("");
-const [dropDownMenuVisible, toggleDropDownMenuVisibility] = useState(false);
+  const fetchMessages = useCallback(() => {
+    axios.post(`${serverAddress}/messages`, { nameFriend: friend.name })
+    .then((data) => setPrivateMessages(data.data))
+    .catch(() => console.log("Fehler beim Laden der Nachrichten"));
+  }, [friend]);
 
   useEffect(() => {
     fetchMessages();
-
     socket = io(`${serverAddress}`, { reconnection: false });
     socket.on("message", (data) => {
       if (data.failed) setPrivateMessages((prev) => `${prev}\nSenden fehlgeschlagen!`.trim());
       else if (data.from) setPrivateMessages((prev) => `${prev}\nVon ${data.from}: ${data.message}`.trim())
       else setPrivateMessages((prev) => `${prev}\nAn ${data.to}: ${data.message}`.trim())
     });
-  }, []);
-  
-  function fetchMessages() {
-    axios.post(`${serverAddress}/messages`, { nameFriend: friend.name })
-      .then((data) => setPrivateMessages(data.data))
-      .catch(() => console.log("Fehler beim Laden der Nachrichten"));
-  }
+  }, [friend, fetchMessages]);
 
   function sendMessage() {
     sendPrivateMessageTo(friend.name, privateMessage); 
