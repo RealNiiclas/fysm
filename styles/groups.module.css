@@ -1,6 +1,7 @@
 
 .groups__list {
-  background: fixed #1d1e26;
+  background: fixed;
+  background-color: #1d1e26;
   height: 100%;
 }
 
@@ -12,10 +13,13 @@
   background: transparent;
   width: 100%;
   display: inline-flex;
+  margin-top: .5rem;
+  margin-bottom: .5rem;
 }
 
 .groups__label label {
-  margin-left: 10px;
+  font-size: 1rem;
+  margin-left: 1rem;
   font-size: larger;
   background: transparent;
   vertical-align: middle;
@@ -37,24 +41,23 @@
   z-index: 10;
   font-size: larger;
   line-height: 2rem;
-}
-
-.groups__addGroup form {
-  background: transparent;
+  display: flex;
 }
 
 #groups__addGroupUserName {
   background: transparent;
-  margin-left: 10px;
+  padding: .5rem;
+  width: 100%;
 }
 
 #groups__addGroupButton {
   background: transparent;
-  margin-left: 10px;
+  padding: .5rem;
+  width: 4rem;
 }
 
 #groups__addGroupButton:hover {
-  background-color: #282935;
+  color: rgb(174, 179, 185);
 }
 
 #groups__addGroup:hover{
@@ -83,8 +86,7 @@
   display: block;
   width: 100%;
   background: transparent;
-  font-size: 1.4rem;
-  line-height: 2rem;
+  font-size: 1rem;
   font-weight: 500;
 }
 
@@ -93,5 +95,5 @@
 }
 
 .group__button:hover{
-  background-color: #282935;
+  color: rgb(174, 179, 185);
 }

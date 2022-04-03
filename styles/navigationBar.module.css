@@ -1,32 +1,23 @@
 .navigationBar {
   height: 3rem;
-  background: fixed #1d1e26;
-  position: relative;
-  display: grid;
-  grid-template-columns: 90% 10%;
-  grid-template-areas: "nameDisplay logOutButton";
-}
-
-.navigationBar__logOut {
-  grid-area: logOutButton;
-  background: transparent;
-}
-
-#navigationBar__logOutButton {
-  background: transparent;
-  height: 100%;
   width: 100%;
-}
-
-#navigationBar__logOutButton:hover {
-  background-color: #282935;;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: fixed;
+  background-color: #1d1e26;
 }
 
 .navigationBar__nameDisplay {
-  grid-area: nameDisplay;
-  background: transparent;
+  margin-left: 1rem;
+  background: none;
 }
 
-#navigationBar__nameDisplayLabel {
-  background: transparent;
+.navigationBar__logoutButton {
+  margin-right: 1rem;
+  background: none;
+}
+
+.navigationBar__logoutButton:hover {
+  cursor: pointer;
 }

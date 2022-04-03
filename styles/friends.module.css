@@ -1,6 +1,8 @@
 
 .friends__list {
-  background: fixed #1d1e26;
+  margin-top: 1rem;
+  background: fixed;
+  background-color: #1d1e26;
   height: 100%;
 }
 
@@ -12,10 +14,13 @@
   background: transparent;
   width: 100%;
   display: inline-flex;
+  align-items: baseline;
+  margin-bottom: .5rem;
 }
 
 .friends__label label {
-  margin-left: 10px;
+  font-size: 1rem;
+  margin-left: 1rem;
   font-size: larger;
   background: transparent;
   vertical-align: middle;
@@ -37,6 +42,7 @@
   z-index: 10;
   font-size: larger;
   line-height: 2rem;
+  display: flex;
 }
 
 .friends__addFriend form {
@@ -45,12 +51,14 @@
 
 #friends__addFriendUserName {
   background: transparent;
-  margin-left: 10px;
+  padding: .5rem;
+  width: 100%;
 }
 
 #friends__addFriendButton {
   background: transparent;
-  margin-left: 10px
+  padding: .5rem;
+  width: 4rem;
 }
 #friends__addFriend:hover{
   color: white;
@@ -78,8 +86,7 @@
   display: block;
   width: 100%;
   background: transparent;
-  font-size: 1.4rem;
-  line-height: 2rem;
+  font-size: 1rem;
   font-weight: 500;
 }
 
@@ -88,5 +95,5 @@
 }
 
 .friend__button:hover{
-  background-color: #282935;
+  color: rgb(174, 179, 185);
 }

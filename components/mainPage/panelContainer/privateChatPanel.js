@@ -57,7 +57,7 @@ export default function PrivateChatPanel({friend, deletePrivateChatPanel, sendPr
       <div className={style.chatPanel__header} >
         <label className={style.chatPanel__nameLabel}>{friend.name}</label>
         <div className={style.chatPanel__settingsDropDown} onMouseLeave={ () => toggleDropDownMenuVisibility(false) }>
-          <input className={style.chatPanel__settingsButton} type="button" value="settings" onClick={ () => toggleDropDownMenuVisibility(!dropDownMenuVisible) }/>
+          <input className={style.chatPanel__settingsButton} type="button" value="..." onClick={ () => toggleDropDownMenuVisibility(!dropDownMenuVisible) }/>
           { dropDownMenuVisible ? <DropDownMenu/> : <></>}
         </div>
         <input className={style.chatPanel__closeButton} type="button" value="X" onClick={(event) => deletePrivateChatPanel(friend)}/>
@@ -68,8 +68,8 @@ export default function PrivateChatPanel({friend, deletePrivateChatPanel, sendPr
         </ul>
       </div>
       <div className={style.chatPanel__bottom}>
-        <input className={style.chatPanel__messageInput} type="text" onKeyDown={enterPressed} value={privateMessage} placeholder="Your Message" onChange={(e) => setPrivateMessage(e.target.value)}/>
-        <input className={style.chatPanel__sendButton} type="submit" value="send" onClick={(event) => sendMessage()}/> 
+        <input className={style.chatPanel__messageInput} type="text" onKeyDown={enterPressed} value={privateMessage} placeholder="Nachricht" onChange={(e) => setPrivateMessage(e.target.value)}/>
+        <input className={style.chatPanel__sendButton} type="submit" value="Senden" onClick={(event) => sendMessage()}/> 
       </div>
     </div>
   );

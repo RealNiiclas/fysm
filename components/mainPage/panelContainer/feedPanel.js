@@ -4,10 +4,8 @@ import { useState, useEffect } from "react";
 import config from "../../../config.json";
 import MessageBox from "./messageBox";
 import { format } from 'date-fns';
-import io from "socket.io-client";
 
 let serverAddress = `${config.serverAddress}${config.serverIncludePort ? ":" + config.serverPort : ""}`;
-let socket = null;
 
 export default function FeedPanel({post, deleteFeedPanel}) {
 
@@ -16,8 +14,6 @@ export default function FeedPanel({post, deleteFeedPanel}) {
 
   useEffect(() => {
     getPosts();
-
-    socket = io(`${serverAddress}`, { reconnection: false });
   }, []);
 
   function getPosts() {
@@ -27,8 +23,9 @@ export default function FeedPanel({post, deleteFeedPanel}) {
   }
 
   function sendPost() {
-    post(posting); 
-    getPosts();
+    axios.post(`${serverAddress}/post`, { content: posting })
+      .then((data) => getPosts())
+      .catch(() => setPosts([]));
     setPosting("");
   }
 
@@ -41,7 +38,8 @@ export default function FeedPanel({post, deleteFeedPanel}) {
   return(
     <div className={style.chatPanel}>
       <div className={style.chatPanel__header}>
-        <label className={style.chatPanel__nameLabel}>{group.name}</label>
+        <label className={style.chatPanel__nameLabel}>Allgemein</label>
+        <div style={{ width: "100%", background: "none" }} ></div>
         <input className={style.chatPanel__closeButton} type="button" value="X" onClick={(event) => deleteFeedPanel()}/>
       </div>
       <div className={style.chatPanel__chat}>
@@ -50,8 +48,8 @@ export default function FeedPanel({post, deleteFeedPanel}) {
         </ul>
       </div>
       <div className={style.chatPanel__bottom}>
-        <input className={style.chatPanel__messageInput} type="text" onKeyDown={enterPressed} value={posting} placeholder="Your Message" onChange={(e) => setPosting(e.target.value)}/>
-        <input className={style.chatPanel__sendButton} type="submit" value="send" onClick={(event) => sendPost()}/> 
+        <input className={style.chatPanel__messageInput} type="text" onKeyDown={enterPressed} value={posting} placeholder="Nachricht" onChange={(e) => setPosting(e.target.value)}/>
+        <input className={style.chatPanel__sendButton} type="submit" value="Senden" onClick={() => sendPost()}/> 
       </div>
     </div>
   );

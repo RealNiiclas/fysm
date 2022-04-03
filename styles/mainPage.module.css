@@ -2,7 +2,6 @@
   position: relative;
   display: grid;
   grid-template-columns: 15% 85%;
-  grid-template-rows:    10% 90%;
   grid-template-areas: 
     "navigationBar navigationBar"
     "chatList    panelContainerList";
@@ -10,15 +9,14 @@
 
 .mainPage__navigationBar {
   grid-area: navigationBar;
-  height: 100%;
   overflow: none;
   position: relative;
-  background: fixed #1d1e26;
 }
 
 .mainPage__chatList {
   grid-area: chatList;
-  background: fixed #1d1e26;
+  background: fixed;
+  background-color: #1d1e26;
   height: 94.5vh;
   overflow: auto;
   position: grid;
@@ -33,10 +31,30 @@
   background: fixed #1d1e26;
   position: relative;
 }
+
 .mainPage__groupList {
   grid-area: groupList;
   background: fixed #1d1e26;
   position: relative;
+}
+
+.mainPage__feedList {
+  text-align: left;
+  margin-top: .5rem;
+  margin-left: 1rem;
+  color: rgb(174, 179, 185);
+  font-size: 1.25rem;
+  background: none;
+}
+
+.mainPage__feed {
+  width: 100%;
+  margin-top: .5rem;
+  background: none;
+}
+
+.mainPage__feed:hover {
+  color: rgb(174, 179, 185);
 }
 
 .mainPage__panelContainerList {

@@ -170,17 +170,10 @@ export default function Home() {
     setFeedPanelVisibility(false);
   }
 
-  //Postings
-  function post(message) {
-    axios.post(`${serverAddress}/post`, { message })
-      .then(() => setStatus("Posten erfolgreich!"))
-      .catch(() => setStatus("Posten fehlgeschlagen!"));
-  }
-
   return (
     <div>
       <Head>
-        <title>FYSM</title>
+        <title>Startseite</title>
       </Head>
       <div className={style.mainPage}>
         <div className={style.mainPage__navigationBar}>
@@ -194,9 +187,8 @@ export default function Home() {
           <div className={style.mainPage__groupList}>
             {<GroupList groups={groups} addPanel={addGroupChatPanel} createGroup={createGroup} acceptGroup={acceptGroup} />}
           </div>
-          {/*<div className={style.mainPage__addFeed}>
-            <input type="button" value="Feed" onClick={addFeedPanel}/>
-          </div>*/}
+          <div className={style.mainPage__feedList}>Feed</div>
+          <input className={style.mainPage__feed} type="button" value="Allgemein" onClick={addFeedPanel}/>
         </div>
         <div className={style.mainPage__panelContainerList}>
           <PanelContainerList 
@@ -205,7 +197,7 @@ export default function Home() {
             removeFriend={removeFriend}
             deleteGroupChatPanel={deleteGroupChatPanel} sendMessageToGroup={sendMessageToGroup}
             leaveGroup={leaveGroup} inviteUser={inviteUser}
-            post={post} feedPanelVisible={feedPanelVisible} deleteFeedPanel={deleteFeedPanel}
+            feedPanelVisible={feedPanelVisible} deleteFeedPanel={deleteFeedPanel}
           />
         </div>
       </div>

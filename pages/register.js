@@ -15,7 +15,7 @@ export default function Register() {
   return(
     <div>
       <Head>
-        <title>Login</title>
+        <title>Registrierung</title>
       </Head>
       <RegisterForm/>
     </div>

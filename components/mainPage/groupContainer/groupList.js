@@ -2,19 +2,18 @@ import GroupButton from "./groupButton.js";
 import style from "../../../styles/groups.module.css";
 import { useState } from "react";
 
+function CreateGroupPanel({ groupName, setGroupName, setInputVisibility, createGroup }) {
+  return(
+    <div className={style.groups__addGroup}>
+      <input key="createGroupPanelText" id={style.groups__addGroupUserName} type="text" value={groupName} placeholder="Name" onChange={(e) => setGroupName(e.target.value)} />
+      <input key="createGroupPanelButton" id={style.groups__addGroupButton} type="button" value="Senden" onClick={() => { createGroup(groupName); setGroupName(""); setInputVisibility(false); }}/>
+    </div>
+  );
+}
 
 export default function GroupList({ groups, addPanel, createGroup, acceptGroup }) {
   const [inputVisibility, setInputVisibility] = useState(false);
   const [groupName, setGroupName] = useState("");
-
-  function CreateGroupPanel() {
-    return(
-      <div className={style.groups__addGroup} onBlur={() => setInputVisibility(false)}>
-        <input key="createGroupPanelText" id={style.groups__addGroupUserName} type="text" value={groupName} placeholder="Groupname" onChange={(e) => setGroupName(e.target.value) } />
-        <input key="createGroupPanelButton" id={style.groups__addGroupButton} type="button" onKeyDown={enterPressed} value="senden" onClick={() => { createGroup(groupName); setInputVisibility(false) }}/>
-      </div>
-    );
-  }
   
   function PendingGroupList() {
     return(
@@ -29,19 +28,13 @@ export default function GroupList({ groups, addPanel, createGroup, acceptGroup }
     );
   }
 
-  function enterPressed(e) {
-    if(e.keyCode == 13) {
-      createGroup(groupName);
-    }
-  }
-
   return(
     <div className={style.groups__list}>
       <div className={style.groups__label}>
         <label>Gruppen</label>
         <input id={style.groups__addGroup} type="button" value="+" onClick={() => setInputVisibility(!inputVisibility)}/>
       </div>
-      { inputVisibility ? <CreateGroupPanel groupname={groupName} setGroupName={setGroupName} toggleVisibility={setInputVisibility} createGroup={createGroup}/> : <></> }
+      { inputVisibility ? <CreateGroupPanel groupName={groupName} setGroupName={setGroupName} setInputVisibility={setInputVisibility} createGroup={createGroup}/> : <></> }
       <ul>
         { groups.map((group) => group.accepted == 1 ? <li key={group.id} className={style.group__accepted}><GroupButton group={group} onClick={addPanel} /></li> : <></>) }
       </ul>

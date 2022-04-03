@@ -9,6 +9,36 @@ import io from "socket.io-client";
 let serverAddress = `${config.serverAddress}${config.serverIncludePort ? ":" + config.serverPort : ""}`;
 let socket = null;
 
+function InviteUserPanel({ inputPanelVisibility, setInputPanelVisibility }) {
+  return(
+    <div className={style.chatPanel__inviteButton} onBlur={() => setInputPanelVisibility(false)}>
+      <input className={style.chatPanel__inviteButton} type="button" value="+" onClick={ () => setInputPanelVisibility(!inputPanelVisibility)}/>
+      {inputPanelVisibility ? <InviteUserPanelInput /> : <></>}
+    </div>
+  );
+}
+
+function InviteUserPanelInput({group, userName, setUserName, toggleVisibility, inviteUser}) {
+  return(
+    <div className={style.groups__addGroup} onBlur={() => setInputPanelVisibility(false)}>
+      <form>
+        <input id={style.groups__addgroupUserName} type="text" value={userName} placeholder="UserName" onChange={(e) => setUserName(e.target.value) } />
+        <input id={style.groups__addGroupButton} type="submit" value="senden" onClick={() => { inviteUser(userName, group); setInputPanelVisibility(false); }}/>
+      </form>
+    </div>
+  );
+}
+
+function DropDownMenu({ group, deleteGroupChatPanel, leaveGroup }) {
+  return(
+    <div className={style.chatPanel__dropDownMenu} >
+      <ul>
+        <li key="leaveGroup"><input type="button" value="Gruppe verlassen" onClick={() => { deleteGroupChatPanel(group); leaveGroup(group); }}/></li>
+      </ul>
+    </div>
+  );
+}
+
 export default function GroupChatPanel({group, deleteGroupChatPanel, sendMessageToGroup, leaveGroup, inviteUser}) {
   const [groupMessages, setGroupMessages] = useState([]);
   const [groupMessage, setGroupMessage] = useState("");
@@ -43,46 +73,14 @@ export default function GroupChatPanel({group, deleteGroupChatPanel, sendMessage
     }
   }
 
-  //TODO muss noch getestet werden
-  function DropDownMenu() {
-    return(
-      <div className={style.chatPanel__dropDownMenu} >
-        <ul>
-          <li key="leaveGroup"><input type="button" value="Gruppe verlassen" onClick={() => { deleteGroupChatPanel(group); leaveGroup(group); }}/></li>
-        </ul>
-      </div>
-    );
-  }
-
-  function InviteUserPanel() {
-    return(
-      <div className={style.chatPanel__inviteButton} onBlur={() => setInputPanelVisibility(false)}>
-        <input className={style.chatPanel__inviteButton} type="button" value="+" onClick={ () => setInputPanelVisibility(!inputPanelVisibility)}/>
-        {inputPanelVisibility ? <InviteUserPanelInput /> : <></>}
-      </div>
-    );
-  }
-  
-  function InviteUserPanelInput({group, userName, setUserName, toggleVisibility, inviteUser}) {
-    return(
-      <div className={style.groups__addGroup} onBlur={() => setInputPanelVisibility(false)}>
-        <form>
-          <input id={style.groups__addgroupUserName} type="text" value={userName} placeholder="UserName" onChange={(e) => setUserName(e.target.value) } />
-          <input id={style.groups__addGroupButton} type="submit" value="senden" onClick={() => { inviteUser(userName, group); setInputPanelVisibility(false); }}/>
-        </form>
-      </div>
-    );
-  }
-
   return(
     <div className={style.chatPanel}>
       <div className={style.chatPanel__header} onMouseLeave={() => toggleDropDownMenuVisibility(false)}>
         <label className={style.chatPanel__nameLabel}>{group.name}</label>
-        
         <div className={style.chatPanel__furtherSettings} onMouseLeave={ () => toggleDropDownMenuVisibility(false) }>
-          {group.admin == 1 ? <InviteUserPanel className={style.chatPanel__inviteInput} /> : <></>}
-          <input className={style.chatPanel__settingsButton} type="button" value="opt" onClick={ () => toggleDropDownMenuVisibility(!dropDownMenuVisible) } />
-          { dropDownMenuVisible ? <DropDownMenu/> : <></>}
+          {group.admin == 1 ? <InviteUserPanel className={style.chatPanel__inviteInput} inputPanelVisibility={inputPanelVisibility} setInputPanelVisibility={setInputPanelVisibility} /> : <></>}
+          <input className={style.chatPanel__settingsButton} type="button" value="..." onClick={ () => toggleDropDownMenuVisibility(!dropDownMenuVisible) } />
+          { dropDownMenuVisible ? <DropDownMenu group={group} deleteGroupChatPanel={deleteGroupChatPanel} leaveGroup={leaveGroup} /> : <></>}
         </div>
         <input className={style.chatPanel__closeButton} type="button" value="X" onClick={(event) => deleteGroupChatPanel(group)}/>
       </div>
@@ -92,8 +90,8 @@ export default function GroupChatPanel({group, deleteGroupChatPanel, sendMessage
         </ul>
       </div>
       <div className={style.chatPanel__bottom}>
-        <input className={style.chatPanel__messageInput} type="text" onKeyDown={enterPressed} value={groupMessage} placeholder="Your Message" onChange={(e) => setGroupMessage(e.target.value)}/>
-        <input className={style.chatPanel__sendButton} type="submit" value="send" onClick={(event) => sendMessage()}/> 
+        <input className={style.chatPanel__messageInput} type="text" onKeyDown={enterPressed} value={groupMessage} placeholder="Nachricht" onChange={(e) => setGroupMessage(e.target.value)}/>
+        <input className={style.chatPanel__sendButton} type="submit" value="Senden" onClick={(event) => sendMessage()}/> 
       </div>
     </div>
   );
