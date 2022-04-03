@@ -290,6 +290,6 @@ export default function Home() {
 }
 
 export const getServerSideProps = () => {
-  if (!config.debug) return { notFound: true };
+  if (!config.debug) return { redirect: { destination: "/", permanent: false } };
   return { props: {} };
 };
