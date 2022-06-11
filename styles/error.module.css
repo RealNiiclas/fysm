@@ -1,0 +1,12 @@
+.container {
+  height: 100vh;
+  background: linear-gradient(to bottom right, #1d1e26, #2a2d3f);
+  background-attachment: fixed;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.title {
+  color: #f0ffff;
+}

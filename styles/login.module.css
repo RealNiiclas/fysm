@@ -1,101 +1,102 @@
-@keyframes gradient { 
-  0%{background-position:0 0}
-  100%{background-position:100% 0}
-}
-
-.loginForm {
-  box-sizing: border-box;
-}
-
-.loginForm__form{
-  text-align: center;
-  position: relative;
-  top: 50%;
-  transform: translateY(50%);
-}
-
-#loginForm__loginLabel {
-  align-content: center;
-  margin: 0 auto;
-  padding-top: 1.5rem;
-  padding-bottom: 1.5rem;
-  flex-direction: row;
-  text-align:center;
-  user-select: none;
-}
-
-#loginForm__submitButtonInput {
-  flex-direction: row;
-  text-align:center;
-  top: 15px;
-  transform: translateY(15px);
-  background: transparent;
-}
-
-.loginForm__textInput {
-  background: rgba(57, 63, 84, 0.8);
-  position: relative;
+.container {
+  height: 100vh;
+  background: linear-gradient(to bottom right, #1d1e26, #2a2d3f);
+  background-attachment: fixed;
   display: flex;
-  flex-direction: row;
-  max-width: 400px;
-  margin: 0 auto;
-  padding: 1.4rem 2rem 1.6rem;
-  border: 0px solid transparent;
-  border-radius: 5px;
-} 
-
-.loginForm__label {
-  background: transparent;
-  font-size: 1rem;
-  user-select: none;
-  position: absolute;
-  transform: translateY(4px);
-  transform-origin: 0 0;
-  transition: all 0.2s;
-  pointer-events: none;
-  display: block;
+  justify-content: center;
+  align-items: center;
 }
 
-.loginForm__textInputField {
-  background: transparent;
-  transform: translateY(10px);
+.form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
-.loginForm__textInput input {
-  flex-grow: 1;
-  font-size: 1.1rem;
-  line-height: 1.2rem;
-  vertical-align: middle;
-} 
+.form_title {
+  color: #f0ffff;
+  font-weight: bold;
+  font-size: 2rem;
+}
 
-.loginForm__textInput:focus-within::after {
+.form_message {
+  margin-top: .25rem;
+  color: #f0ffff;
+}
+
+.form_input {
+  position: relative;
+}
+
+@keyframes gradient {
+  0% {
+    background-position: 0 0
+  }
+
+  100% {
+    background-position: 200% 0
+  }
+}
+
+.form_input:focus-within::after {
   content: "";
   position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 999;
-  height: 2px;
-  border-bottom-left-radius: 2px;
-  border-bottom-right-radius: 2px;
-  background-position: 0% 0%;
+  animation: 3s linear infinite gradient;
   background: linear-gradient(to right, #B294FF, #57E6E6, #FEFFB8, #57E6E6, #B294FF, #57E6E6);
-  background-size: 500% auto;
-  animation: gradient 3s linear infinite;
-  transition: all .2s;
+  background-size: 200%;
+  width: 25rem;
+  height: 2px;
+  bottom: 0;
+  left: 0;
 }
 
-.loginForm__textInputField::placeholder{
-  color: transparent;
-  user-select: none;
+.form_username,
+.form_password {
+  width: 25rem;
+  font-size: 1rem;
+  color: #f0ffff;
+  padding: 1.5rem;
+  background-color: #333545;
+  outline: none;
+  border: none;
 }
 
-.loginForm__textInputField:focus + .loginForm__label,
-.loginForm__textInputField:not(:placeholder-shown) + .loginForm__label{
-  transform: translateY(-1em) scale(.8);
-  opacity: .7;
+.form_username {
+  margin-top: 1.75rem;
 }
 
+.form_password {
+  margin-top: .3rem;
+}
 
+.form_username::placeholder,
+.form_password::placeholder {
+  color: #ffffff5f;
+}
 
+.form_username::selection,
+.form_password::selection {
+  background-color: #ffffff5f;
+}
 
+.form_login,
+.form_register {
+  width: 15rem;
+  font-size: 1rem;
+  color: #f0ffff;
+  padding: 1rem;
+  background-color: #3e4260;
+  outline: none;
+  border: none;
+}
+
+.form_login:hover,
+.form_register:hover {
+  filter: brightness(1.25);
+  cursor: pointer;
+}
+
+.form_login {
+  margin-top: 2rem;
+  margin-bottom: .3rem;
+}

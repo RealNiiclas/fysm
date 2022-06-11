@@ -1,214 +1,260 @@
-import FriendList from "../components/mainPage/friendContainer/friendList.js";
-import GroupList from "../components/mainPage/groupContainer/groupList.js";
-import NavigationBar from "../components/mainPage/navigationBar.js";
-import PanelContainerList from "../components/mainPage/panelContainer/panelContainerList.js";
 import axios from "axios";
-import { useEffect, useState } from "react";
-import config from "../config.json";
-import io from "socket.io-client";
-import style from "../styles/mainPage.module.css";
 import Head from "next/head";
+import io from "socket.io-client";
+import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
+import style from "../styles/main.module.css";
+import Direct from "../components/direct";
+import Group from "../components/group";
+import Feed from "../components/feed";
+import config from "../config.json";
 
 let serverAddress = `${config.serverAddress}${config.serverIncludePort ? ":" + config.serverPort : ""}`;
 let socket = null;
 
 export default function Home() {
-  const [privateChatPanelList, setPrivateChatPanelList] = useState([]);
-  const [groupChatPanelList, setGroupChatPanelList] = useState([]);
-  const [feedPanelVisible, setFeedPanelVisibility] = useState(false);
-  const [friends, setFriends] = useState([]); 
+  const router = useRouter();
+
+  const [addFriendToggle, setAddFriendToggle] = useState(false);
+  const [addGroupToggle, setAddGroupToggle] = useState(false);
+  const [friendName, setFriendName] = useState("");
+  const [groupName, setGroupName] = useState("");
+
+  const [name, setName] = useState("");
+  const [friends, setFriends] = useState([]);
   const [groups, setGroups] = useState([]);
 
+  const [feeds, setFeeds] = useState({});
+  const [directs, setDirects] = useState({});
+  const [multiples, setMultiples] = useState({});
 
   useEffect(() => {
-    //fetch friends
-    axios.post(`${serverAddress}/friends`)
-    .then((data) => setFriends(data.data)).catch((err) => { console.log(err); });
+    axios.post(`${serverAddress}/user`)
+      .then((res) => setName(res.data))
+      .catch(() => router.push("/"));
 
-    
-    //fetch groups
-    axios.post(`${serverAddress}/groups`)
-      .then((data) => setGroups(data.data)).catch((err) => { console.log(err); });
-
-    //set up connection
-    socket = io(`${serverAddress}`, { reconnection: false });
-    //connectChat();
-  }, []);
-
-  //CONNECT
-  /*function connectChat () {
-    if (socket) return;
-    socket = io(`${serverAddress}`, { reconnection: false });
-    socket.on("connect", () => setMessages((prev) => `${prev}\nVerbindung aufgebaut!`.trim()));
-    socket.on("unauthed", () => setMessages((prev) => `${prev}\nNicht authentifiziert!`.trim()));
-    socket.on("message", (data) => {
-      if (data.failed) setMessages((prev) => `${prev}\nSenden fehlgeschlagen!`.trim());
-      else if (data.from) setMessages((prev) => `${prev}\nVon ${data.from}: ${data.message}`.trim())
-      else setMessages((prev) => `${prev}\nAn ${data.to}: ${data.message}`.trim())
-    })
-    socket.on("groupMessage", (data) => {
-      if (data.failed) setMessages((prev) => `${prev}\nSenden fehlgeschlagen!`.trim());
-      else setMessages((prev) => `${prev}\n${data.from}: ${data.message}`.trim());
-    });
-    socket.on("disconnect", () => {
-      setMessages((prev) => `${prev}\nVerbindung getrennt!`.trim())
-      socket = null;
-    });
-  }*/
-  //FRIENDS
-  function sendPrivateMessageTo(friendName, message) {
-    if (!socket) return;
-    socket.emit("messageTo", message, friendName);
-  }
-
-  function addFriend(userName) {
-    axios.post(`${serverAddress}/addFriend`, { friend: userName })
-      .then(() => {
-        console.log("add erfolgreich");
-        axios.post(`${serverAddress}/friends`)
-          .then((data) => setFriends(data.data))
-          .catch((err) => { console.log(err); });
-      })
-      .catch(() => console.log("add unerfolgreich"));
-  }
-
-  function acceptFriend(friend) {
-    axios.post(`${serverAddress}/acceptFriend`, { friend: friend.name })
-      .then(() => {
-        console.log("accept erfolgreich");
-        axios.post(`${serverAddress}/friends`)
-          .then((data) => setFriends(data.data))
-          .catch((err) => { console.log(err); });
-      })
-      .catch(() => console.log("accept unerfolgreich"));
-    setFriends(friends);
-  }
-
-  function removeFriend(friend) {
-    //remove friend
-    axios.post(`${serverAddress}/removeFriend`, { friend: friend.name })
-      .then(() => console.log("remove erfolgreich"))
-      .catch(() => console.log("remove unerfolgreich"));
-
-    //fetch friends and set state
     axios.post(`${serverAddress}/friends`)
       .then((data) => setFriends(data.data))
-      .catch((err) => { console.log(err); });
-    setFriends(friends);
-  }
+      .catch(() => { });
 
-  //GROUPS
-  function sendMessageToGroup(groupID, message) {
+    axios.post(`${serverAddress}/groups`)
+      .then((data) => setGroups(data.data))
+      .catch(() => { });
+
+    socket = io(`${serverAddress}`, { reconnection: false });
+    socket.on("connect", () => { });
+    socket.on("unauthed", () => { });
+    socket.on("disconnect", () => { socket = null; });
+  }, []);
+
+  useEffect(() => {
     if (!socket) return;
-    socket.emit("messageToGroup", message, groupID);
-  }
+    socket.on("message", (data) => {
+      if (data.failed) return;
+      else if (data.from) {
+        if (!directs[data.from]) return;
+        loadDirect(data.from);
+      }
+      else {
+        if (!directs[data.to]) return;
+        loadDirect(data.to);
+      }
+    });
 
-  function createGroup(groupName) {
-    axios.post(`${serverAddress}/createGroup`, { group: groupName })
-      .then(() => {console.log("group creation success");
-        axios.post(`${serverAddress}/groups`)
-        .then((data) => setGroups(data.data)).catch((err) => { console.log(err); });
-      })
-      .catch(() => console.log("group creation failed"));
-  }
+    return () => {
+      if (!socket) return;
+      socket.off("message");
+    };
+  }, [loadDirect]);
 
-  function inviteUser(userName, group) {
-    axios.post(`${serverAddress}/inviteGroup`, { user: userName, group: group.id })
-      .then(() => console.log("invitation success"))
-      .catch(() => console.log("group invitation failed"));
-  }
+  useEffect(() => {
+    if (!socket) return;
+    socket.on("groupMessage", (data) => {
+      if (data.failed) return;
+      else {
+        if (!multiples[data.id]) return;
+        loadMultiple(data.id, multiples[data.id].name);
+      }
+    });
 
-  function acceptGroup(group) {
-    axios.post(`${serverAddress}/acceptInvite`, { group: group.id })
+    return () => {
+      if (!socket) return;
+      socket.off("groupMessage");
+    };
+  }, [loadMultiple]);
+
+  function addFriend() {
+    axios.post(`${serverAddress}/addFriend`, { friend: friendName })
       .then(() => {
-        console.log("Akzeptieren erfolgreich!");
-        axios.post(`${serverAddress}/groups`)
-          .then((data) => setGroups(data.data)).catch((err) => { console.log(err); });
+        axios.post(`${serverAddress}/friends`)
+          .then((data) => {
+            setFriends(data.data);
+            setAddFriendToggle(false);
+            setFriendName("");
+          })
+          .catch(() => { });
       })
-      .catch(() => console.log("Akzeptieren fehlgeschlagen!"));
+      .catch(() => { });
   }
 
-  function leaveGroup(group) {
-    axios.post(`${serverAddress}/leaveGroup`, { group: group.id })
-      .then(() => { 
-        console.log("group leaving success");
+  function createGroup() {
+    axios.post(`${serverAddress}/createGroup`, { group: groupName })
+      .then(() => {
         axios.post(`${serverAddress}/groups`)
-          .then((data) => setGroups(data.data)).catch((err) => { console.log(err); });
+          .then((data) => {
+            setGroups(data.data);
+            setAddGroupToggle(false);
+            setGroupName("");
+          })
+          .catch(() => { });
       })
-      .catch(() => console.log("group leaving failed"));
+      .catch(() => { });
   }
 
-  //Panel Control
-  function addPrivateChatPanel(friend) {
-    if(!privateChatPanelList.includes(friend)) {
-      setPrivateChatPanelList((prevPanelList) => [...prevPanelList, friend]/*.filter((entry, idx) => prevPanelList.indexOf(entry) == idx)*/);
-    } else console.log("Panel existiert bereits");
+  function logout() {
+    axios.post(`${serverAddress}/logout`)
+      .then(() => router.push("/login"))
+      .catch(() => { });
   }
 
-  function deletePrivateChatPanel(friend) {
-    console.log("deleted panel: " + friend.name);
-    setPrivateChatPanelList(privateChatPanelList.filter((panel) => panel.id != friend.id));
+  function loadMultiple(id, name) {
+    axios.post(`${serverAddress}/groupMessages`, { group: id })
+      .then((data) => setMultiples((prev) => {
+        const next = { ...prev };
+        next[id] = { name, data: data.data };
+        return next;
+      }))
+      .catch(() => { });
   }
 
-  function addGroupChatPanel(group) {
-    if(!groupChatPanelList.includes(group)) {
-      setGroupChatPanelList((prevPanelList) => [...prevPanelList, group]);
-      console.log("erstelles panel für: " + group.name); 
-    } else console.log("Panel existiert bereits"); 
+  function openMultiple(id, name) {
+    if (multiples[id]) return;
+    loadMultiple(id, name);
   }
 
-  function deleteGroupChatPanel(group) {
-    console.log("deleted panel: " + group.name);
-    setGroupChatPanelList(groupChatPanelList.filter((panel) => panel.id != group.id));
+  function sendMultiple(id, message) {
+    if (!socket) return;
+    socket.emit("messageToGroup", message, id);
   }
 
-  function addFeedPanel() {
-    setFeedPanelVisibility(true);
+  function closeMultiple(name) {
+    setMultiples((prev) => {
+      const next = { ...prev };
+      delete next[name];
+      return next;
+    });
   }
 
-  function deleteFeedPanel() {
-    setFeedPanelVisibility(false);
+  function loadDirect(name) {
+    axios.post(`${serverAddress}/messages`, { nameFriend: name })
+      .then((data) => setDirects((prev) => {
+        const next = { ...prev };
+        next[name] = data.data;
+        return next;
+      }))
+      .catch(() => { });
+  }
+
+  function openDirect(name) {
+    if (directs[name]) return;
+    loadDirect(name);
+  }
+
+  function sendDirect(name, message) {
+    if (!socket) return;
+    socket.emit("messageTo", message, name);
+  }
+
+  function closeDirect(name) {
+    setDirects((prev) => {
+      const next = { ...prev };
+      delete next[name];
+      return next;
+    });
+  }
+
+  function loadFeed(title) {
+    axios.post(`${serverAddress}/posts`)
+      .then((data) => setFeeds((prev) => {
+        const next = { ...prev };
+        next[title] = data.data;
+        return next;
+      }))
+      .catch(() => { });
+  }
+
+  function openFeed(title) {
+    if (feeds[title]) return;
+    loadFeed(title);
+  }
+
+  function sendPost(title, message) {
+    axios.post(`${serverAddress}/post`, { content: message })
+      .then(() => loadFeed(title))
+      .catch(() => setPosts([]));
+  }
+
+  function closeFeed(title) {
+    setFeeds((prev) => {
+      const next = { ...prev };
+      delete next[title];
+      return next;
+    });
   }
 
   return (
     <div>
       <Head>
-        <title>Startseite</title>
+        <title>FYSM - Hauptseite</title>
       </Head>
-      <div className={style.mainPage}>
-        <div className={style.mainPage__navigationBar}>
-          <NavigationBar />
+      <div className={style.container}>
+        <div className={style.navigation}>
+          <div className={style.navigation_name}>{name}</div>
+          <input type="button" value="Abmelden" className={style.navigation_logout} onClick={logout} />
         </div>
-        <div className={style.mainPage__chatList}>
-          <div className={style.mainPage__friendList}>
-            <FriendList friends={friends} addPanel={addPrivateChatPanel} addFriend={addFriend} acceptFriend={acceptFriend} />
+        <div className={style.body}>
+          <div className={style.sidebar}>
+            <div className={style.sidebar_header}>
+              <div className={style.sidebar_title}>Freunde</div>
+              <input type="button" className={style.sidebar_action} value="+" onClick={() => setAddFriendToggle((prev) => !prev)} />
+            </div>
+            {addFriendToggle && <div className={style.sidebar_input}>
+              <input className={style.sidebar_inputText} type="text" spellCheck={false} placeholder="Freund hinzufügen ..." value={friendName} onChange={(e) => setFriendName(e.target.value)} />
+              <input className={style.sidebar_inputConfirm} type="button" spellCheck={false} value="+" onClick={addFriend} />
+            </div>}
+            {friends.length > 0 && <div className={style.list}>
+              {friends.map(({ name }) => <div key={name} className={style.list_item} onClick={() => openDirect(name)}>{name}</div>)}
+            </div>}
+            <div className={style.sidebar_header}>
+              <div className={style.sidebar_title}>Gruppen</div>
+              <input type="button" className={style.sidebar_action} value="+" onClick={() => setAddGroupToggle((prev) => !prev)} />
+            </div>
+            {addGroupToggle && <div className={style.sidebar_input}>
+              <input className={style.sidebar_inputText} type="text" spellCheck={false} placeholder="Gruppe hinzufügen ..." value={groupName} onChange={(e) => setGroupName(e.target.value)} />
+              <input className={style.sidebar_inputConfirm} type="button" spellCheck={false} value="+" onClick={createGroup} />
+            </div>}
+            {groups.length > 0 && <div className={style.list}>
+              {groups.map(({ name, id }) => <div key={name} className={style.list_item} onClick={() => openMultiple(id, name)}>{name}</div>)}
+            </div>}
+            <div className={style.sidebar_header}>
+              <div className={style.sidebar_title}>Feeds</div>
+            </div>
+            <div className={style.list}>
+              <div className={style.list_item} onClick={() => openFeed("Allgemein")}>Allgemein</div>
+            </div>
           </div>
-          <dialog open={true} />
-          <div className={style.mainPage__groupList}>
-            {<GroupList groups={groups} addPanel={addGroupChatPanel} createGroup={createGroup} acceptGroup={acceptGroup} />}
+          <div className={style.content}>
+            {Object.keys(directs).map((key) => <Direct key={key} name={key} content={directs[key]} closeDirect={() => closeDirect(key)} sendDirect={sendDirect} />)}
+            {Object.keys(multiples).map((key) => <Group key={key} id={key} name={multiples[key].name} content={multiples[key].data} closeMultiple={() => closeMultiple(key)} sendMultiple={sendMultiple} />)}
+            {Object.keys(feeds).map((key) => <Feed key={key} title={key} content={feeds[key]} closeFeed={() => closeFeed(key)} sendPost={sendPost} />)}
           </div>
-          <div className={style.mainPage__feedList}>Feed</div>
-          <input className={style.mainPage__feed} type="button" value="Allgemein" onClick={addFeedPanel}/>
-        </div>
-        <div className={style.mainPage__panelContainerList}>
-          <PanelContainerList 
-            privateChatPanelList={privateChatPanelList} groupChatPanelList={groupChatPanelList} 
-            deletePrivateChatPanel={deletePrivateChatPanel} sendPrivateMessageTo={sendPrivateMessageTo} 
-            removeFriend={removeFriend}
-            deleteGroupChatPanel={deleteGroupChatPanel} sendMessageToGroup={sendMessageToGroup}
-            leaveGroup={leaveGroup} inviteUser={inviteUser}
-            feedPanelVisible={feedPanelVisible} deleteFeedPanel={deleteFeedPanel}
-          />
         </div>
       </div>
     </div>
   );
 }
 
-
-//Redirect to Login when session is not logged in
 export const getServerSideProps = (context) => {
   if (!context.req.session.name) return { redirect: { destination: "/login", permanent: false } };
   return { props: {} };
 };
-

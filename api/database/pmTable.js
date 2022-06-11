@@ -18,7 +18,7 @@ function createMessage(name, nameFriend, content) {
 
 function getMessages(name, nameFriend) {
   return db.prepare(`SELECT pm.id, author as name, content, pm.time FROM pm, friend WHERE pm.friend=friend.id
-    AND ((friend.sender=? AND friend.receiver=?) OR (friend.sender=? AND friend.receiver=?))  ORDER BY pm.time ASC`).all(name, nameFriend, nameFriend, name);
+    AND ((friend.sender=? AND friend.receiver=?) OR (friend.sender=? AND friend.receiver=?))  ORDER BY pm.time DESC`).all(name, nameFriend, nameFriend, name);
 }
 
 module.exports = {

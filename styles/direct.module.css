@@ -1,0 +1,76 @@
+.direct {
+  display: flex;
+  flex-direction: column;
+  width: 20rem;
+}
+
+.direct_header {
+  display: flex;
+  background-color: #393b4e;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.direct_name {
+  padding: 1rem;
+  color: #f0ffff;
+}
+
+.direct_close {
+  padding: 1rem;
+  color: #f0ffff;
+  background-color: #393b4e;
+  outline: none;
+  border: none;
+}
+
+.direct_close:hover {
+  filter: brightness(1.25);
+  cursor: pointer;
+} 
+
+.direct_list {
+  display: flex;
+  flex-direction: column;
+  background-color: #292b37;
+  padding-block: 1rem;
+  flex-grow: 1;
+  max-height: 85vh;
+  overflow-y: auto;
+}
+
+.direct_message {
+  color: #f0ffff;
+  word-wrap: break-word;
+  font-size: .85rem;
+  padding-inline: 1rem;
+}
+
+.direct_input {
+  display: flex;
+  background-color: #393b4e;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.direct_inputText {
+  padding: 1rem;
+  color: #f0ffff;
+  background-color: #393b4e;
+  outline: none;
+  border: none;
+  width: 100%;
+}
+
+.direct_send {
+  padding: 1rem;
+  color: #f0ffff;
+  background-color: #393b4e;
+  outline: none;
+  border: none;
+}
+
+.direct_send:hover {
+  filter: brightness(1.25);
+  cursor: pointer;
+}

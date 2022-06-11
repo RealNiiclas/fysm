@@ -21,9 +21,5 @@
     "react-dom": "17.0.2",
     "socket.io": "4.4.1",
     "socket.io-client": "4.4.1"
-  },
-  "devDependencies": {
-    "eslint": "8.9.0",
-    "eslint-config-next": "12.1.0"
   }
 }

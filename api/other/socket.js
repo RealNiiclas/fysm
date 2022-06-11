@@ -32,7 +32,7 @@ function handleSocket(io, socket) {
       return socket.emit("groupMessage", { failed: true });
     Array.from(io.sockets.sockets.values()).forEach((sock) => {
       if (members.find((member) => (member.user == sock.request.session.name && member.accepted == 1)))
-        sock.emit("groupMessage", { message, from: socket.request.session.name });
+        sock.emit("groupMessage", { message, from: socket.request.session.name, id: grouping });
     });
   });
 }
