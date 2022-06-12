@@ -17,7 +17,7 @@ function createGroupMessage(name, grouping, content) {
 
 function getGroupMessages(name, grouping) {
   return db.prepare(`SELECT DISTINCT gm.id, user.name, content, gm.time FROM gm, member, user, grouping WHERE member.user=user.name 
-    AND grouping.id=member.grouping AND gm.member=member.id AND member.grouping=? AND member.grouping=(SELECT grouping FROM member WHERE user=? AND grouping=?) 
+    AND grouping.id=member.grouping AND gm.member=member.id AND member.grouping=? AND member.grouping=(SELECT grouping FROM member WHERE accepted=1 AND user=? AND grouping=?) 
     ORDER BY gm.time DESC`).all(grouping, name, grouping);
 }
 

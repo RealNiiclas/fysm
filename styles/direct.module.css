@@ -1,7 +1,7 @@
 .direct {
   display: flex;
   flex-direction: column;
-  width: 20rem;
+  min-width: 20rem;
 }
 
 .direct_header {
@@ -16,7 +16,7 @@
   color: #f0ffff;
 }
 
-.direct_close {
+.direct_action {
   padding: 1rem;
   color: #f0ffff;
   background-color: #393b4e;
@@ -24,7 +24,7 @@
   border: none;
 }
 
-.direct_close:hover {
+.direct_action:hover {
   filter: brightness(1.25);
   cursor: pointer;
 } 

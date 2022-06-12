@@ -1,7 +1,7 @@
 .group {
   display: flex;
   flex-direction: column;
-  width: 20rem;
+  min-width: 20rem;
 }
 
 .group_header {
@@ -16,7 +16,7 @@
   color: #f0ffff;
 }
 
-.group_close {
+.group_action {
   padding: 1rem;
   color: #f0ffff;
   background-color: #393b4e;
@@ -24,10 +24,23 @@
   border: none;
 }
 
-.group_close:hover {
+.group_action:hover {
   filter: brightness(1.25);
   cursor: pointer;
 } 
+
+.group_actionInput {
+  border: none;
+  outline: none;
+  padding: 0 2rem;
+  font-size: .85rem;
+  background-color: #393b4e;
+  color: #f0ffff;
+}
+
+.group_actionInput::placeholder {
+  color: #ffffff5f;
+}
 
 .group_list {
   display: flex;

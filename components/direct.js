@@ -1,7 +1,7 @@
 import { useState } from "react";
 import style from "../styles/direct.module.css";
 
-export default function Direct({ name, content, closeDirect, sendDirect }) {
+export default function Direct({ name, content, friend, closeDirect, sendDirect, acceptDirect, removeDirect }) {
   const [text, setText] = useState("");
 
   function send() {
@@ -13,7 +13,11 @@ export default function Direct({ name, content, closeDirect, sendDirect }) {
   return <div className={style.direct}>
     <div className={style.direct_header}>
       <div className={style.direct_name}>{name}</div>
-      <input type="button" className={style.direct_close} value="x" onClick={closeDirect} />
+      <div className={style.direct_actions}>
+        <input type="button" className={style.direct_action} value="Entfernen" onClick={removeDirect} />
+        {friend && !friend.accepted && !!friend.receiver && <input type="button" className={style.direct_action} value="Annehmen" onClick={acceptDirect} />}
+        <input type="button" className={style.direct_action} value="X" onClick={closeDirect} />
+      </div>
     </div>
     <div className={style.direct_list}>
       {content.map(({ id, content, name }) => <div key={id} className={style.direct_message}>{name}: {content}</div>)}

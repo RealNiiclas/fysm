@@ -97,6 +97,29 @@ export default function Home() {
       .catch(() => { });
   }
 
+  function acceptFriend(name) {
+    axios.post(`${serverAddress}/acceptFriend`, { friend: name })
+      .then(() => {
+        axios.post(`${serverAddress}/friends`)
+          .then((data) => setFriends(data.data))
+          .catch(() => { });
+      })
+      .catch(() => { });
+  }
+
+  function removeFriend(name) {
+    axios.post(`${serverAddress}/removeFriend`, { friend: name })
+      .then(() => {
+        axios.post(`${serverAddress}/friends`)
+          .then((data) => {
+            setFriends(data.data);
+            closeDirect(name);
+          })
+          .catch(() => { });
+      })
+      .catch(() => { });
+  }
+
   function createGroup() {
     axios.post(`${serverAddress}/createGroup`, { group: groupName })
       .then(() => {
@@ -105,6 +128,35 @@ export default function Home() {
             setGroups(data.data);
             setAddGroupToggle(false);
             setGroupName("");
+          })
+          .catch(() => { });
+      })
+      .catch(() => { });
+  }
+
+  function inviteGroup(id, name) {
+    axios.post(`${serverAddress}/inviteGroup`, { user: name, group: id })
+      .then(() => { })
+      .catch(() => { });
+  }
+
+  function acceptGroup(id) {
+    axios.post(`${serverAddress}/acceptInvite`, { group: id })
+      .then(() => {
+        axios.post(`${serverAddress}/groups`)
+          .then((data) => setGroups(data.data))
+          .catch((err) => { });
+      })
+      .catch(() => { });
+  }
+
+  function leaveGroup(id) {
+    axios.post(`${serverAddress}/leaveGroup`, { group: id })
+      .then(() => {
+        axios.post(`${serverAddress}/groups`)
+          .then((data) => {
+            setGroups(data.data);
+            closeMultiple(id);
           })
           .catch(() => { });
       })
@@ -137,10 +189,10 @@ export default function Home() {
     socket.emit("messageToGroup", message, id);
   }
 
-  function closeMultiple(name) {
+  function closeMultiple(id) {
     setMultiples((prev) => {
       const next = { ...prev };
-      delete next[name];
+      delete next[id];
       return next;
     });
   }
@@ -244,8 +296,10 @@ export default function Home() {
             </div>
           </div>
           <div className={style.content}>
-            {Object.keys(directs).map((key) => <Direct key={key} name={key} content={directs[key]} closeDirect={() => closeDirect(key)} sendDirect={sendDirect} />)}
-            {Object.keys(multiples).map((key) => <Group key={key} id={key} name={multiples[key].name} content={multiples[key].data} closeMultiple={() => closeMultiple(key)} sendMultiple={sendMultiple} />)}
+            {Object.keys(directs).map((key) => <Direct key={key} name={key} content={directs[key]} friend={friends.find(({ name }) => name == key)} 
+              closeDirect={() => closeDirect(key)} sendDirect={sendDirect} acceptDirect={() => acceptFriend(key)} removeDirect={() => removeFriend(key)} />)}
+            {Object.keys(multiples).map((key) => <Group key={key} id={key} name={multiples[key].name} content={multiples[key].data} accept={() => acceptGroup(key)}
+              closeMultiple={() => closeMultiple(key)} sendMultiple={sendMultiple} leaveMultiple={() => leaveGroup(key)} invite={inviteGroup} group={groups.find(({ id }) => id == key)} />)}
             {Object.keys(feeds).map((key) => <Feed key={key} title={key} content={feeds[key]} closeFeed={() => closeFeed(key)} sendPost={sendPost} />)}
           </div>
         </div>

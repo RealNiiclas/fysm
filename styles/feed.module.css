@@ -1,7 +1,7 @@
 .feed {
   display: flex;
   flex-direction: column;
-  width: 20rem;
+  min-width: 20rem;
 }
 
 .feed_header {
