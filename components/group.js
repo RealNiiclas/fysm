@@ -11,12 +11,17 @@ export default function Group({ id, name, content, group, sendMultiple, closeMul
     setText("");
   }
 
+  function inviteUser() {
+    invite(id, userName);
+    setUserName("");
+  }
+
   return <div className={style.group}>
     <div className={style.group_header}>
       <div className={style.group_name}>{name}</div>
       <div className={style.group_actions}>
         {group && !!group.admin && <input type="text" className={style.group_actionInput} placeholder="Nutzer hinzufügen ..." value={userName} onChange={(e) => setUserName(e.target.value)} />}
-        {group && !!group.admin && <input type="button" className={style.group_action} value="Einladen" onClick={() => invite(id, userName)} />}
+        {group && !!group.admin && <input type="button" className={style.group_action} value="Einladen" onClick={inviteUser} />}
         {group && !group.accepted && <input type="button" className={style.group_action} value="Annehmen" onClick={accept} />}
         <input type="button" className={style.group_action} value="Verlassen" onClick={leaveMultiple} />
         <input type="button" className={style.group_action} value="X" onClick={closeMultiple} />
